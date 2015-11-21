@@ -7,7 +7,7 @@ Goals
   - [ ] Compile HOAS to source in some language
   - [ ] POC parser that outputs HOAS
 
-This is a literate haskell file.
+This is a literate haskell file. For interactive-style editing, type `make watch`, which will use [entr](http://entrproject.org/) to watch for file changes in the source.
 
 ```haskell
 > module Main where
