@@ -1,1 +1,1 @@
-README.lhs
+src/Main.lhs

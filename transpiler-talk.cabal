@@ -1,0 +1,19 @@
+name:                transpiler-talk
+version:             0.1.0.0
+synopsis:            Attempt to round-trip a simple language in Haskell
+description:         Please see README.md
+homepage:            http://github.com/blast-hardcheese/transpiler-talk
+license-file:        LICENSE
+author:              Devon Stewart
+maintainer:          blast@hardchee.se
+copyright:           2015 Devon Stewart
+category:            language
+build-type:          Simple
+cabal-version:       >=1.10
+
+executable transpiler-talk
+  hs-source-dirs:      src
+  main-is:             Main.lhs
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5
+  ghc-options:         -optL -q
