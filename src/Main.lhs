@@ -18,6 +18,18 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 > class HOAS f where
 >   ($$) :: f (a -> b) -> f a -> f b
 >   lam :: (f a -> f b) -> f (a -> b)
+>
+> data PPrint a = PPrint { prettyPrint :: Int -> String, atomic :: Bool }
+>
+> instance HOAS PPrint where
+>   PPrint f at1 $$ PPrint g at2 = PPrint (\i -> parens at1 (f i) ++ " $$ " ++ parens at2 (g i)) False
+>     where
+>     parens True  x = x
+>     parens False x = "(" ++ x ++ ")"
+>   lam f = PPrint (\i -> "(\\" ++ name i ++ " -> " ++ prettyPrint (f (PPrint (\_ -> name i) True)) (i + 1) ++ ")") False
+>     where
+>     name :: Int -> String
+>     name i = "a" ++ show i
 ```
 
 ```haskell
