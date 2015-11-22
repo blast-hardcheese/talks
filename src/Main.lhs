@@ -19,6 +19,9 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 >   ($$) :: f (a -> b) -> f a -> f b
 >   lam :: (f a -> f b) -> f (a -> b)
 >
+>   true :: f Bool
+>   false :: f Bool
+>
 > data PPrint a = PPrint { prettyPrint :: Int -> String, atomic :: Bool }
 >
 > instance HOAS PPrint where
@@ -30,10 +33,13 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 >     where
 >     name :: Int -> String
 >     name i = "a" ++ show i
+>
+>   true = PPrint (\_ -> "True") True
+>   false = PPrint (\_ -> "False") True
 ```
 
 ```haskell
 > main :: IO ()
 > main = do
->   putStrLn "hello world"
+>   putStrLn $ prettyPrint false 0
 ```
