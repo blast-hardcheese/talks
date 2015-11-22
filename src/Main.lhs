@@ -25,23 +25,22 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 >
 >   ifThenElse :: f Bool -> f a -> f a -> f a
 >
-> data PPrint a = PPrint { prettyPrint :: Int -> String, atomic :: Bool }
+> data PPrint a = PPrint { prettyPrint :: Int -> String }
 >
 > instance HOAS PPrint where
->   PPrint f at1 $$ PPrint g at2 = PPrint (\i -> parens at1 (f i) ++ " $$ " ++ parens at2 (g i)) False
+>   PPrint f $$ PPrint g = PPrint (\i -> parens (f i) ++ " $$ " ++ parens (g i))
 >     where
->     parens True  x = x
->     parens False x = "(" ++ x ++ ")"
->   lam f = PPrint (\i -> "(\\" ++ name i ++ " -> " ++ prettyPrint (f (PPrint (\_ -> name i) True)) (i + 1) ++ ")") False
+>     parens x = "(" ++ x ++ ")"
+>   lam f = PPrint (\i -> "(\\" ++ name i ++ " -> " ++ prettyPrint (f (PPrint (\_ -> name i))) (i + 1) ++ ")")
 >     where
 >     name :: Int -> String
 >     name i = "a" ++ show i
 >
->   true = PPrint (\_ -> "True") True
->   false = PPrint (\_ -> "False") True
->   hnot (PPrint value _) = PPrint (\i -> "(" ++ "not " ++ value i ++ ")") False
+>   true = PPrint (\_ -> "True")
+>   false = PPrint (\_ -> "False")
+>   hnot (PPrint value) = PPrint (\i -> "(" ++ "not " ++ value i ++ ")")
 >
->   ifThenElse (PPrint pred _) (PPrint ts _) (PPrint fs _) = PPrint (\i -> "if (" ++ (pred i) ++ ") then " ++ ts i ++ " else " ++ fs i) False
+>   ifThenElse (PPrint pred) (PPrint ts) (PPrint fs) = PPrint (\i -> "if (" ++ (pred i) ++ ") then " ++ ts i ++ " else " ++ fs i)
 ```
 
 ```haskell
