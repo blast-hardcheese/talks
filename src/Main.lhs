@@ -21,6 +21,7 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 >
 >   true :: f Bool
 >   false :: f Bool
+>   hnot :: f Bool -> f Bool
 >
 >   ifThenElse :: f Bool -> f a -> f a -> f a
 >
@@ -38,6 +39,7 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 >
 >   true = PPrint (\_ -> "True") True
 >   false = PPrint (\_ -> "False") True
+>   hnot (PPrint value _) = PPrint (\i -> "(" ++ "not " ++ value i ++ ")") False
 >
 >   ifThenElse (PPrint pred _) (PPrint ts _) (PPrint fs _) = PPrint (\i -> "if (" ++ (pred i) ++ ") then " ++ ts i ++ " else " ++ fs i) False
 ```
@@ -45,5 +47,5 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 ```haskell
 > main :: IO ()
 > main = do
->   putStrLn $ prettyPrint (ifThenElse true false true) 0
+>   putStrLn $ prettyPrint (ifThenElse (hnot true) false true) 0
 ```
