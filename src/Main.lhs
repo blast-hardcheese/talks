@@ -23,6 +23,9 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 >   false :: f Bool
 >   hnot :: f Bool -> f Bool
 >
+>   hcons :: f a -> f [a] -> f [a]
+>   hnil :: f [a]
+>
 >   ifThenElse :: f Bool -> f a -> f a -> f a
 >
 > data PPrint a = PPrint { prettyPrint :: Int -> String }
@@ -39,6 +42,9 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 >   true = PPrint (\_ -> "True")
 >   false = PPrint (\_ -> "False")
 >   hnot (PPrint value) = PPrint (\i -> "(" ++ "not " ++ value i ++ ")")
+>
+>   hcons (PPrint lhs) (PPrint arr) = PPrint (\i -> "(" ++ (lhs i) ++ " : " ++ (arr i) ++ ")")
+>   hnil = PPrint (\_ -> "[]")
 >
 >   ifThenElse (PPrint pred) (PPrint ts) (PPrint fs) = PPrint (\i -> "if (" ++ (pred i) ++ ") then " ++ ts i ++ " else " ++ fs i)
 ```
