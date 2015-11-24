@@ -32,6 +32,10 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 >
 >   ifThenElse :: f Bool -> f a -> f a -> f a
 >
+```
+
+Pretty Printing instance of HOAS
+```haskell
 > data PPrint a = PPrint { prettyPrint :: Int -> String }
 >
 > instance HOAS PPrint where
