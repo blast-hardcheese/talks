@@ -10,6 +10,7 @@ Goals
 This is a literate haskell file. For interactive-style editing, type `make watch`, which will use [entr](http://entrproject.org/) to watch for file changes in the source.
 
 ```haskell
+> {-# LANGUAGE MultiParamTypeClasses, TypeSynonymInstances, FlexibleInstances #-}
 > module Main where
 ```
 
@@ -33,6 +34,9 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 >   ifThenElse :: f Bool -> f a -> f a -> f a
 >
 ```
+
+> class HOAS f => HOASType f t where
+>   hpure :: t -> f t
 
 Pretty Printing instance of HOAS
 ```haskell
@@ -59,13 +63,23 @@ Pretty Printing instance of HOAS
 >   add (PPrint lhs) (PPrint rhs) = PPrint (\i -> lhs i ++ " + " ++ rhs i)
 >
 >   ifThenElse (PPrint pred) (PPrint ts) (PPrint fs) = PPrint (\i -> "if (" ++ (pred i) ++ ") then " ++ ts i ++ " else " ++ fs i)
+
+> instance HOASType PPrint Int where
+>   hpure x = PPrint (\_ -> show x)
 >
 > pprintMain :: IO ()
 > pprintMain = do
 >   putStrLn $ prettyPrint (ifThenElse (hnot true) false true) 0
 >   putStrLn $ prettyPrint (lam hnot) 0
+>   putStrLn $ prettyPrint (hpure (123 :: Int)) 0
 >   putStrLn $ prettyPrint (hcons true (ifThenElse (hnot true) (hcons false (hcons true hnil)) hnil)) 0
->   putStrLn $ prettyPrint (hcons (int 0) (ifThenElse (equals (add (int 23) (int 27)) (int 50)) (hcons (int 1) (hcons (int 2) (hcons (int 3) hnil))) hnil)) 0
+>   putStrLn $ prettyPrint (hcons
+>                                 (hpure (0 :: Int)) -- Unpleasant wart
+>                                 (ifThenElse (equals (add (hpure 23) (hpure 27)) (hpure 50))
+>                                   (hcons (hpure 1) (hcons (hpure 2) (hcons (hpure 3) hnil)))
+>                                   hnil
+>                                 )
+>                          ) 0
 ```
 
 ```haskell
