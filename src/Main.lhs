@@ -47,10 +47,16 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 >   hnil = PPrint (\_ -> "[]")
 >
 >   ifThenElse (PPrint pred) (PPrint ts) (PPrint fs) = PPrint (\i -> "if (" ++ (pred i) ++ ") then " ++ ts i ++ " else " ++ fs i)
+>
+> pprintMain :: IO ()
+> pprintMain = do
+>   putStrLn $ prettyPrint (ifThenElse (hnot true) false true) 0
+>   putStrLn $ prettyPrint (lam hnot) 0
+>   putStrLn $ prettyPrint (hcons true (ifThenElse (hnot true) (hcons false (hcons true hnil)) hnil)) 0
 ```
 
 ```haskell
 > main :: IO ()
 > main = do
->   putStrLn $ prettyPrint (ifThenElse (hnot true) false true) 0
+>   pprintMain
 ```
