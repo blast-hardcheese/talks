@@ -28,6 +28,7 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 >
 >   hcons :: f a -> f [a] -> f [a]
 >   hnil :: f [a]
+>   hmap :: f (a -> b) -> f [a] -> f [b]
 >
 >   add :: f Int -> f Int -> f Int
 >
@@ -37,6 +38,9 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 
 > class HOAS f => HOASType f t where
 >   hpure :: t -> f t
+
+> class HOAS f => HOASStringOps f where
+>   hlength :: f [a] -> f Int
 
 Pretty Printing instance of HOAS
 ```haskell
@@ -59,6 +63,7 @@ Pretty Printing instance of HOAS
 >
 >   hcons (PPrint lhs) (PPrint arr) = PPrint (\i -> "(" ++ (lhs i) ++ " : " ++ (arr i) ++ ")")
 >   hnil = PPrint (\_ -> "[]")
+>   hmap (PPrint f) (PPrint arr) = PPrint (\i -> "map " ++ f i ++ " " ++ arr i)
 >
 >   add (PPrint lhs) (PPrint rhs) = PPrint (\i -> lhs i ++ " + " ++ rhs i)
 >
@@ -66,12 +71,21 @@ Pretty Printing instance of HOAS
 
 > instance HOASType PPrint Int where
 >   hpure x = PPrint (\_ -> show x)
+
+> instance HOASType PPrint String where
+>   hpure x = PPrint (\_ -> show x)
+
+> instance HOASStringOps PPrint where
+>   hlength (PPrint xs) = PPrint (\i -> "length " ++ xs i)
+
 >
 > pprintMain :: IO ()
 > pprintMain = do
 >   putStrLn $ prettyPrint (ifThenElse (hnot true) false true) 0
+>   putStrLn $ prettyPrint (hmap (lam hnot) (hcons true (hcons false hnil))) 0
 >   putStrLn $ prettyPrint (lam hnot) 0
 >   putStrLn $ prettyPrint (hpure (123 :: Int)) 0
+>   putStrLn $ prettyPrint (hpure "string?") 0
 >   putStrLn $ prettyPrint (hcons true (ifThenElse (hnot true) (hcons false (hcons true hnil)) hnil)) 0
 >   putStrLn $ prettyPrint (hcons
 >                                 (hpure (0 :: Int)) -- Unpleasant wart
@@ -80,6 +94,9 @@ Pretty Printing instance of HOAS
 >                                   hnil
 >                                 )
 >                          ) 0
+>   putStrLn $ prettyPrint (ifThenElse (equals (hlength (hcons true hnil)) (hpure 0)) true false) 0
+>   putStrLn $ prettyPrint (equals (hlength (hcons true hnil)) (hpure 0)) 0
+>   putStrLn $ prettyPrint (hmap (lam hlength) (hcons (hpure "foo") (hcons (hpure "bar") (hcons (hpure "baz") hnil)))) 0
 ```
 
 ```haskell
