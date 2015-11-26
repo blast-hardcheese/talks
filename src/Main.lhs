@@ -20,9 +20,6 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 >   ($$) :: f (a -> b) -> f a -> f b
 >   lam :: (f a -> f b) -> f (a -> b)
 >   equals :: f a -> f a -> f Bool
->
->   true :: f Bool
->   false :: f Bool
 >   hnot :: f Bool -> f Bool
 >   int :: Int -> f Int
 >
@@ -56,8 +53,6 @@ Pretty Printing instance of HOAS
 >     name i = "a" ++ show i
 >   equals (PPrint lhs) (PPrint rhs) = PPrint (\i -> lhs i ++ " == " ++ rhs i)
 >
->   true = PPrint (\_ -> "True")
->   false = PPrint (\_ -> "False")
 >   hnot (PPrint value) = PPrint (\i -> "(" ++ "not " ++ value i ++ ")")
 >   int x = PPrint (\_ -> show x)
 >
@@ -68,6 +63,9 @@ Pretty Printing instance of HOAS
 >   add (PPrint lhs) (PPrint rhs) = PPrint (\i -> lhs i ++ " + " ++ rhs i)
 >
 >   ifThenElse (PPrint pred) (PPrint ts) (PPrint fs) = PPrint (\i -> "if (" ++ (pred i) ++ ") then " ++ ts i ++ " else " ++ fs i)
+
+> instance HOASType PPrint Bool where
+>   hpure x = PPrint (\_ -> show x)
 
 > instance HOASType PPrint Int where
 >   hpure x = PPrint (\_ -> show x)
@@ -81,12 +79,12 @@ Pretty Printing instance of HOAS
 >
 > pprintMain :: IO ()
 > pprintMain = do
->   putStrLn $ prettyPrint (ifThenElse (hnot true) false true) 0
->   putStrLn $ prettyPrint (hmap (lam hnot) (hcons true (hcons false hnil))) 0
+>   putStrLn $ prettyPrint (ifThenElse (hnot (hpure True)) (hpure False) (hpure True)) 0
+>   putStrLn $ prettyPrint (hmap (lam hnot) (hcons (hpure True) (hcons (hpure False) hnil))) 0
 >   putStrLn $ prettyPrint (lam hnot) 0
 >   putStrLn $ prettyPrint (hpure (123 :: Int)) 0
 >   putStrLn $ prettyPrint (hpure "string?") 0
->   putStrLn $ prettyPrint (hcons true (ifThenElse (hnot true) (hcons false (hcons true hnil)) hnil)) 0
+>   putStrLn $ prettyPrint (hcons (hpure True) (ifThenElse (hnot (hpure True)) (hcons (hpure False) (hcons (hpure True) hnil)) hnil)) 0
 >   putStrLn $ prettyPrint (hcons
 >                                 (hpure (0 :: Int)) -- Unpleasant wart
 >                                 (ifThenElse (equals (add (hpure 23) (hpure 27)) (hpure 50))
@@ -94,8 +92,8 @@ Pretty Printing instance of HOAS
 >                                   hnil
 >                                 )
 >                          ) 0
->   putStrLn $ prettyPrint (ifThenElse (equals (hlength (hcons true hnil)) (hpure 0)) true false) 0
->   putStrLn $ prettyPrint (equals (hlength (hcons true hnil)) (hpure 0)) 0
+>   putStrLn $ prettyPrint (ifThenElse (equals (hlength (hcons (hpure True) hnil)) (hpure 0)) (hpure True) (hpure False)) 0
+>   putStrLn $ prettyPrint (equals (hlength (hcons (hpure True) hnil)) (hpure 0)) 0
 >   putStrLn $ prettyPrint (hmap (lam hlength) (hcons (hpure "foo") (hcons (hpure "bar") (hcons (hpure "baz") hnil)))) 0
 ```
 
