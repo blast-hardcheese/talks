@@ -21,7 +21,6 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 >   lam :: (f a -> f b) -> f (a -> b)
 >   equals :: f a -> f a -> f Bool
 >   hnot :: f Bool -> f Bool
->   int :: Int -> f Int
 >
 >   hcons :: f a -> f [a] -> f [a]
 >   hnil :: f [a]
@@ -54,7 +53,6 @@ Pretty Printing instance of HOAS
 >   equals (PPrint lhs) (PPrint rhs) = PPrint (\i -> lhs i ++ " == " ++ rhs i)
 >
 >   hnot (PPrint value) = PPrint (\i -> "(" ++ "not " ++ value i ++ ")")
->   int x = PPrint (\_ -> show x)
 >
 >   hcons (PPrint lhs) (PPrint arr) = PPrint (\i -> "(" ++ (lhs i) ++ " : " ++ (arr i) ++ ")")
 >   hnil = PPrint (\_ -> "[]")
