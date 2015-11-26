@@ -51,6 +51,18 @@ As Phil put it, this is the minimal useful implementation of the lambda calculus
 
 ... all without providing an instance of `HOAS` or concrete types.
 
+Pretty Printing instance of HOAS
+```haskell
+> data PPrint a = PPrint { prettyPrint :: Int -> String }
+>
+> instance HOAS PPrint where
+>   PPrint f $$ PPrint g = PPrint (\i -> "(" ++ (f i) ++ " $ " ++ (g i) ++ ")")
+>   lam f = PPrint (\i -> "(\\" ++ name i ++ " -> " ++ prettyPrint (f (PPrint (\_ -> name i))) (i + 1) ++ ")")
+>     where
+>     name :: Int -> String
+>     name i = "a" ++ show i
+```
+
 ```haskell
 > class HOAS f => HOASType f t where
 >   hpure :: t -> f t
@@ -73,17 +85,6 @@ As Phil put it, this is the minimal useful implementation of the lambda calculus
 
 > class HOAS f => HOASEqOps f where
 >   equals :: Eq a => f a -> f a -> f Bool
-
-Pretty Printing instance of HOAS
-```haskell
-> data PPrint a = PPrint { prettyPrint :: Int -> String }
->
-> instance HOAS PPrint where
->   PPrint f $$ PPrint g = PPrint (\i -> "(" ++ (f i) ++ " $ " ++ (g i) ++ ")")
->   lam f = PPrint (\i -> "(\\" ++ name i ++ " -> " ++ prettyPrint (f (PPrint (\_ -> name i))) (i + 1) ++ ")")
->     where
->     name :: Int -> String
->     name i = "a" ++ show i
 
 > instance HOASListOps PPrint where
 >   hcons (PPrint lhs) (PPrint arr) = PPrint (\i -> "(" ++ (lhs i) ++ " : " ++ (arr i) ++ ")")
