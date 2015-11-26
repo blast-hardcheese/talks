@@ -19,7 +19,6 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 > class HOAS f where
 >   ($$) :: f (a -> b) -> f a -> f b
 >   lam :: (f a -> f b) -> f (a -> b)
->   equals :: f a -> f a -> f Bool
 ```
 
 > class HOAS f => HOASType f t where
@@ -41,6 +40,9 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 > class HOAS f => HOASStringOps f where
 >   hlength :: f [a] -> f Int
 
+> class HOAS f => HOASEqOps f where
+>   equals :: Eq a => f a -> f a -> f Bool
+
 Pretty Printing instance of HOAS
 ```haskell
 > data PPrint a = PPrint { prettyPrint :: Int -> String }
@@ -53,7 +55,6 @@ Pretty Printing instance of HOAS
 >     where
 >     name :: Int -> String
 >     name i = "a" ++ show i
->   equals (PPrint lhs) (PPrint rhs) = PPrint (\i -> lhs i ++ " == " ++ rhs i)
 
 > instance HOASListOps PPrint where
 >   hcons (PPrint lhs) (PPrint arr) = PPrint (\i -> "(" ++ (lhs i) ++ " : " ++ (arr i) ++ ")")
@@ -80,7 +81,9 @@ Pretty Printing instance of HOAS
 > instance HOASStringOps PPrint where
 >   hlength (PPrint xs) = PPrint (\i -> "length " ++ xs i)
 
->
+> instance HOASEqOps PPrint where
+>   equals (PPrint lhs) (PPrint rhs) = PPrint (\i -> lhs i ++ " == " ++ rhs i)
+
 > pprintMain :: IO ()
 > pprintMain = do
 >   putStrLn $ prettyPrint (ifThenElse (hnot (hpure True)) (hpure False) (hpure True)) 0
