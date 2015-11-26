@@ -20,8 +20,6 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 >   ($$) :: f (a -> b) -> f a -> f b
 >   lam :: (f a -> f b) -> f (a -> b)
 >   equals :: f a -> f a -> f Bool
->   hnot :: f Bool -> f Bool
->
 >   hcons :: f a -> f [a] -> f [a]
 >   hnil :: f [a]
 >   hmap :: f (a -> b) -> f [a] -> f [b]
@@ -34,6 +32,9 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 
 > class HOAS f => HOASType f t where
 >   hpure :: t -> f t
+
+> class HOAS f => HOASBoolOps f where
+>   hnot :: f Bool -> f Bool
 
 > class HOAS f => HOASStringOps f where
 >   hlength :: f [a] -> f Int
@@ -52,8 +53,6 @@ Pretty Printing instance of HOAS
 >     name i = "a" ++ show i
 >   equals (PPrint lhs) (PPrint rhs) = PPrint (\i -> lhs i ++ " == " ++ rhs i)
 >
->   hnot (PPrint value) = PPrint (\i -> "(" ++ "not " ++ value i ++ ")")
->
 >   hcons (PPrint lhs) (PPrint arr) = PPrint (\i -> "(" ++ (lhs i) ++ " : " ++ (arr i) ++ ")")
 >   hnil = PPrint (\_ -> "[]")
 >   hmap (PPrint f) (PPrint arr) = PPrint (\i -> "map " ++ f i ++ " " ++ arr i)
@@ -64,6 +63,9 @@ Pretty Printing instance of HOAS
 
 > instance HOASType PPrint Bool where
 >   hpure x = PPrint (\_ -> show x)
+
+> instance HOASBoolOps PPrint where
+>   hnot (PPrint value) = PPrint (\i -> "(" ++ "not " ++ value i ++ ")")
 
 > instance HOASType PPrint Int where
 >   hpure x = PPrint (\_ -> show x)
