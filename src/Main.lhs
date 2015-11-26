@@ -20,12 +20,14 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 >   ($$) :: f (a -> b) -> f a -> f b
 >   lam :: (f a -> f b) -> f (a -> b)
 >   equals :: f a -> f a -> f Bool
->   add :: f Int -> f Int -> f Int
->
 ```
 
 > class HOAS f => HOASType f t where
 >   hpure :: t -> f t
+
+> class HOAS f => HOASNumOps f where
+>   add :: Num n => f n -> f n -> f n
+>   int :: Int -> f Int
 
 > class HOAS f => HOASListOps f where
 >   hcons :: f a -> f [a] -> f [a]
@@ -52,13 +54,15 @@ Pretty Printing instance of HOAS
 >     name :: Int -> String
 >     name i = "a" ++ show i
 >   equals (PPrint lhs) (PPrint rhs) = PPrint (\i -> lhs i ++ " == " ++ rhs i)
->
->   add (PPrint lhs) (PPrint rhs) = PPrint (\i -> lhs i ++ " + " ++ rhs i)
 
 > instance HOASListOps PPrint where
 >   hcons (PPrint lhs) (PPrint arr) = PPrint (\i -> "(" ++ (lhs i) ++ " : " ++ (arr i) ++ ")")
 >   hnil = PPrint (\_ -> "[]")
 >   hmap (PPrint f) (PPrint arr) = PPrint (\i -> "map " ++ f i ++ " " ++ arr i)
+
+> instance HOASNumOps PPrint where
+>   add (PPrint lhs) (PPrint rhs) = PPrint (\i -> lhs i ++ " + " ++ rhs i)
+>   int = hpure
 
 > instance HOASType PPrint Bool where
 >   hpure x = PPrint (\_ -> show x)
@@ -82,13 +86,13 @@ Pretty Printing instance of HOAS
 >   putStrLn $ prettyPrint (ifThenElse (hnot (hpure True)) (hpure False) (hpure True)) 0
 >   putStrLn $ prettyPrint (hmap (lam hnot) (hcons (hpure True) (hcons (hpure False) hnil))) 0
 >   putStrLn $ prettyPrint (lam hnot) 0
->   putStrLn $ prettyPrint (hpure (123 :: Int)) 0
+>   putStrLn $ prettyPrint (int 123) 0
 >   putStrLn $ prettyPrint (hpure "string?") 0
 >   putStrLn $ prettyPrint (hcons (hpure True) (ifThenElse (hnot (hpure True)) (hcons (hpure False) (hcons (hpure True) hnil)) hnil)) 0
 >   putStrLn $ prettyPrint (hcons
->                                 (hpure (0 :: Int)) -- Unpleasant wart
->                                 (ifThenElse (equals (add (hpure 23) (hpure 27)) (hpure 50))
->                                   (hcons (hpure 1) (hcons (hpure 2) (hcons (hpure 3) hnil)))
+>                                 (int 0)
+>                                 (ifThenElse (equals (add (int 23) (int 27)) (int 50))
+>                                   (hcons (int 1) (hcons (int 2) (hcons (int 3) hnil)))
 >                                   hnil
 >                                 )
 >                          ) 0
