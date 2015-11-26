@@ -48,9 +48,7 @@ Pretty Printing instance of HOAS
 > data PPrint a = PPrint { prettyPrint :: Int -> String }
 >
 > instance HOAS PPrint where
->   PPrint f $$ PPrint g = PPrint (\i -> parens (f i) ++ " $$ " ++ parens (g i))
->     where
->     parens x = "(" ++ x ++ ")"
+>   PPrint f $$ PPrint g = PPrint (\i -> "(" ++ (f i) ++ " $ " ++ (g i) ++ ")")
 >   lam f = PPrint (\i -> "(\\" ++ name i ++ " -> " ++ prettyPrint (f (PPrint (\_ -> name i))) (i + 1) ++ ")")
 >     where
 >     name :: Int -> String
