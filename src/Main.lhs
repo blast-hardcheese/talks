@@ -21,6 +21,37 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 >   lam :: (f a -> f b) -> f (a -> b)
 ```
 
+As Phil put it, this is the minimal useful implementation of the lambda calculus. We've got a fair amount of primitive expression:
+
+```haskell
+> -- Identity
+> hid :: HOAS f => f (a -> a)
+> hid = lam $ \x -> x
+
+> -- First-order functions
+> hid' :: HOAS f => f (a -> a)
+> hid' = hid $$ hid
+
+> -- Function application (Freeman)
+> app :: HOAS f => f (a -> (a -> b) -> b)
+> app = lam $ \a -> lam $ \f -> f $$ a
+
+> -- Value manipulation
+> konst :: HOAS f => f (a -> b -> a)
+> konst = lam $ \a -> lam $ \_ -> a
+
+> -- Function composition
+> hcompose :: HOAS f => f ((b -> c) -> (a -> b) -> a -> c)
+> hcompose = lam $ \g -> (lam $ \f -> lam $ \x -> g $$ (f $$ x))
+
+> -- Parameter application
+> hflip :: HOAS f => f ((a -> b -> c) -> (b -> a -> c))
+> hflip = lam (\f -> lam (\x -> lam (\y -> (f $$ y) $$ x)))
+```
+
+... all without providing an instance of `HOAS` or concrete types.
+
+```haskell
 > class HOAS f => HOASType f t where
 >   hpure :: t -> f t
 
