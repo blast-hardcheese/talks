@@ -20,20 +20,20 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 >   ($$) :: f (a -> b) -> f a -> f b
 >   lam :: (f a -> f b) -> f (a -> b)
 >   equals :: f a -> f a -> f Bool
->   hcons :: f a -> f [a] -> f [a]
->   hnil :: f [a]
->   hmap :: f (a -> b) -> f [a] -> f [b]
->
 >   add :: f Int -> f Int -> f Int
->
->   ifThenElse :: f Bool -> f a -> f a -> f a
 >
 ```
 
 > class HOAS f => HOASType f t where
 >   hpure :: t -> f t
 
+> class HOAS f => HOASListOps f where
+>   hcons :: f a -> f [a] -> f [a]
+>   hnil :: f [a]
+>   hmap :: f (a -> b) -> f [a] -> f [b]
+
 > class HOAS f => HOASBoolOps f where
+>   ifThenElse :: f Bool -> f a -> f a -> f a
 >   hnot :: f Bool -> f Bool
 
 > class HOAS f => HOASStringOps f where
@@ -53,18 +53,18 @@ Pretty Printing instance of HOAS
 >     name i = "a" ++ show i
 >   equals (PPrint lhs) (PPrint rhs) = PPrint (\i -> lhs i ++ " == " ++ rhs i)
 >
+>   add (PPrint lhs) (PPrint rhs) = PPrint (\i -> lhs i ++ " + " ++ rhs i)
+
+> instance HOASListOps PPrint where
 >   hcons (PPrint lhs) (PPrint arr) = PPrint (\i -> "(" ++ (lhs i) ++ " : " ++ (arr i) ++ ")")
 >   hnil = PPrint (\_ -> "[]")
 >   hmap (PPrint f) (PPrint arr) = PPrint (\i -> "map " ++ f i ++ " " ++ arr i)
->
->   add (PPrint lhs) (PPrint rhs) = PPrint (\i -> lhs i ++ " + " ++ rhs i)
->
->   ifThenElse (PPrint pred) (PPrint ts) (PPrint fs) = PPrint (\i -> "if (" ++ (pred i) ++ ") then " ++ ts i ++ " else " ++ fs i)
 
 > instance HOASType PPrint Bool where
 >   hpure x = PPrint (\_ -> show x)
 
 > instance HOASBoolOps PPrint where
+>   ifThenElse (PPrint pred) (PPrint ts) (PPrint fs) = PPrint (\i -> "if (" ++ (pred i) ++ ") then " ++ ts i ++ " else " ++ fs i)
 >   hnot (PPrint value) = PPrint (\i -> "(" ++ "not " ++ value i ++ ")")
 
 > instance HOASType PPrint Int where
