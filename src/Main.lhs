@@ -75,6 +75,14 @@ Starting with a modified version of Freeman's PPrint instance of HOAS
 >     where
 >     name :: Int -> String
 >     name i = "a" ++ show i
+
+> data HEval a = HEval { haskellEval :: a }
+>   deriving (Show)
+>
+> instance HOAS HEval where
+>   HEval f $$ HEval g = HEval (f $ g)
+    lam :: (f a -> f b) -> f (a -> b)
+>   lam f = HEval (\x -> haskellEval (f $ HEval x))
 ```
 
 ```haskell
@@ -134,6 +142,19 @@ Starting with a modified version of Freeman's PPrint instance of HOAS
 
 > instance HOASEqOps PPrint where
 >   equals (PPrint lhs) (PPrint rhs) = PPrint (\i -> lhs i ++ " == " ++ rhs i)
+
+
+> instance HOASType HEval Int where
+>   hpure x = HEval x
+
+> instance HOASListOps HEval where
+>   hcons (HEval lhs) (HEval arr) = HEval (lhs : arr)
+>   hnil = HEval ([])
+>   hmap (HEval f) (HEval arr) = HEval (map f arr)
+
+> instance HOASNumOps HEval where
+>   add (HEval lhs) (HEval rhs) = HEval (lhs + rhs)
+>   int = hpure
 
 > pprintMain :: IO ()
 > pprintMain = do
