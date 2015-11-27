@@ -17,6 +17,7 @@ This is a literate haskell file. For interactive-style editing, type `make watch
 Starting off with the definition of HOAS from Phil Freeman's [hoas](https://github.com/paf31/haskell-slides/blob/master/hoas/HOAS.hs) talk:
 ```haskell
 > class HOAS f where
+>   infixr 0 $$
 >   ($$) :: f (a -> b) -> f a -> f b
 >   lam :: (f a -> f b) -> f (a -> b)
 ```
