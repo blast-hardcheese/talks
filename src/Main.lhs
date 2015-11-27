@@ -48,6 +48,19 @@ As Phil put it, this is the minimal useful implementation of the lambda calculus
 > -- Parameter application
 > hflip :: HOAS f => f ((a -> b -> c) -> (b -> a -> c))
 > hflip = lam (\f -> lam (\x -> lam (\y -> (f $$ y) $$ x)))
+
+> -- Church Numerals
+> hsucc :: HOAS f => f (((a -> a) -> a -> a) -> (a -> a) -> a -> a)
+> hsucc = lam (\next -> lam (\f -> lam (\x -> f $$ ((next $$ f) $$ x))))
+
+> hzero :: HOAS f => f ((a -> a) -> a -> a)
+> hzero = konst $$ hid
+
+> hone :: HOAS f => f ((a -> a) -> a -> a)
+> hone = hsucc $$ hzero
+
+> htwo :: HOAS f => f ((a -> a) -> a -> a)
+> htwo = hsucc $$ hsucc $$ hzero
 ```
 
 ... all without providing an instance of `HOAS` or concrete types.
@@ -71,6 +84,13 @@ Pretty Printing instance of HOAS
 > class HOAS f => HOASNumOps f where
 >   add :: Num n => f n -> f n -> f n
 >   int :: Int -> f Int
+
+-- Using church numerals
+> addOne :: HOASNumOps f => f (Int -> Int)
+> addOne = (lam $ add (int 1))
+
+> runChurchTwo :: HOASNumOps f => f Int
+> runChurchTwo = (htwo $$ addOne) $$ (int 0)
 
 > class HOAS f => HOASListOps f where
 >   hcons :: f a -> f [a] -> f [a]
