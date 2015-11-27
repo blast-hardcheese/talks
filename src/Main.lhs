@@ -37,7 +37,7 @@ As Phil put it, this is the minimal useful implementation of the lambda calculus
 > app :: HOAS f => f (a -> (a -> b) -> b)
 > app = lam $ \a -> lam $ \f -> f $$ a
 
-> -- Value manipulation
+> -- Value manipulation (Freeman)
 > konst :: HOAS f => f (a -> b -> a)
 > konst = lam $ \a -> lam $ \_ -> a
 
