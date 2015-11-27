@@ -65,7 +65,7 @@ As Phil put it, this is the minimal useful implementation of the lambda calculus
 
 ... all without providing an instance of `HOAS` or concrete types.
 
-Pretty Printing instance of HOAS
+Starting with a modified version of Freeman's PPrint instance of HOAS
 ```haskell
 > data PPrint a = PPrint { prettyPrint :: Int -> String }
 >
