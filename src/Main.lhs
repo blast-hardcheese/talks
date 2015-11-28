@@ -239,6 +239,16 @@ Implementing a HOAS -> Haskell evaluator
 >   hnil = HEval ([])
 >   hmap (HEval f) (HEval arr) = HEval (map f arr)
 >   HEval lhs +++ HEval rhs = HEval (lhs ++ rhs)
+
+> instance HOASBoolOps HEval where
+>   ifThenElse (HEval pred) (HEval ts) (HEval fs) = HEval (if (pred) then ts else fs)
+>   hand (HEval p1) (HEval p2) = HEval (p1 && p2)
+
+> instance HOASType HEval String where
+>   hpure = HEval
+
+> instance HOASStringOps HEval where
+>   hlength (HEval xs) = HEval (length xs)
 ```
 
 Adding `Int`/`Num a` to HOAS
