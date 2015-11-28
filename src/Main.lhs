@@ -24,32 +24,44 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 
 As Phil put it, this is the minimal useful implementation of the lambda calculus. We've got a fair amount of primitive expression:
 
+<h6 id="pure_identity">Identity</h6>
 ```haskell
-> -- Identity
 > hid :: HOAS f => f (a -> a)
 > hid = lam $ \x -> x
+```
 
-> -- First-order functions
+<h6 id="pure_first-order-functions">First-order functions</h6>
+```haskell
 > hid' :: HOAS f => f (a -> a)
 > hid' = hid $$ hid
+```
 
-> -- Function application (Freeman)
+<h6 id="pure_application">Function application (Freeman)</h6>
+```haskell
 > app :: HOAS f => f (a -> (a -> b) -> b)
 > app = lam $ \a -> lam $ \f -> f $$ a
+```
 
-> -- Value manipulation (Freeman)
+<h6 id="pure_value-manipulation">Value manipulation (Freeman)</h6>
+```haskell
 > konst :: HOAS f => f (a -> b -> a)
 > konst = lam $ \a -> lam $ \_ -> a
+```
 
-> -- Function composition
+<h6 id="pure_composition">Function composition</h6>
+```haskell
 > hcompose :: HOAS f => f ((b -> c) -> (a -> b) -> a -> c)
 > hcompose = lam $ \g -> (lam $ \f -> lam $ \x -> g $$ (f $$ x))
+```
 
-> -- Parameter application
+<h6 id="pure_parameter_flip">Parameter flipping</h6>
+```haskell
 > hflip :: HOAS f => f ((a -> b -> c) -> (b -> a -> c))
 > hflip = lam (\f -> lam (\x -> lam (\y -> (f $$ y) $$ x)))
+```
 
-> -- Church Numerals
+<h6 id="pure_church_numerals">Church Numerals</h6>
+```haskell
 > hsucc :: HOAS f => f (((a -> a) -> a -> a) -> (a -> a) -> a -> a)
 > hsucc = lam (\next -> lam (\f -> lam (\x -> f $$ ((next $$ f) $$ x))))
 
