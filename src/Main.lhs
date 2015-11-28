@@ -185,7 +185,10 @@ Now we can represent some simple conditional logic:
 Ignore this stuff for now
 =========================
 
-just having fun with HOAS
+just having fun with HOAS.
+
+Implementing a HOAS -> Haskell evaluator
+----------------------------------------
 
 ```haskell
 > data HEval a = HEval { haskellEval :: a }
@@ -194,39 +197,49 @@ just having fun with HOAS
 > instance HOAS HEval where
 >   HEval f $$ HEval g = HEval (f $ g)
 >   lam f = HEval (\x -> haskellEval (f $ HEval x))
+```
+
+Adding `Int`/`Num a` to HOAS
+----------------------
+```haskell
+> instance HOASType PPrint Int where
+>   hpure x = PPrint (\_ -> show x)
+
+> instance HOASType HEval Int where
+>   hpure x = HEval x
 
 > class HOAS f => HOASNumOps f where
 >   add :: Num n => f n -> f n -> f n
 >   int :: Int -> f Int
 
-> class HOAS f => HOASStringOps f where
->   hlength :: f [a] -> f Int
-
 > instance HOASNumOps PPrint where
 >   add (PPrint lhs) (PPrint rhs) = PPrint (\i -> lhs i ++ " + " ++ rhs i)
 >   int = hpure
 
-> instance HOASType PPrint Int where
->   hpure x = PPrint (\_ -> show x)
+> instance HOASNumOps HEval where
+>   add (HEval lhs) (HEval rhs) = HEval (lhs + rhs)
+>   int = hpure
+```
 
+Adding `String` to HOAS
+-----------------------
+
+```haskell
 > instance HOASType PPrint String where
 >   hpure x = PPrint (\_ -> show x)
 
+> class HOAS f => HOASStringOps f where
+>   hlength :: f [a] -> f Int
+
 > instance HOASStringOps PPrint where
 >   hlength (PPrint xs) = PPrint (\i -> "length " ++ xs i)
+```
 
-
-> instance HOASType HEval Int where
->   hpure x = HEval x
 
 > instance HOASListOps HEval where
 >   hcons (HEval lhs) (HEval arr) = HEval (lhs : arr)
 >   hnil = HEval ([])
 >   hmap (HEval f) (HEval arr) = HEval (map f arr)
-
-> instance HOASNumOps HEval where
->   add (HEval lhs) (HEval rhs) = HEval (lhs + rhs)
->   int = hpure
 
 > pprintMain :: IO ()
 > pprintMain = do
