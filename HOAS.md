@@ -11,7 +11,7 @@ Goals
 
 ```haskell
 > {-# LANGUAGE MultiParamTypeClasses, TypeSynonymInstances, FlexibleInstances, FlexibleContexts #-}
-> module Main where
+> module HOAS where
 ```
 
 Lambda Calculus as a Basis for our Language
@@ -323,9 +323,4 @@ Adding `String` to HOAS
 > -- Map length over a list of strings
 > ex'7 :: (HOASType f Int, HOASType f String, HOASListOps f, HOASStringOps f) => f [Int]
 > ex'7 = (hmap (lam hlength) (hcons (hpure "a") (hcons (hpure "be") (hcons (hpure "cee") hnil))))
-```
-
-```haskell
-> main :: IO ()
-> main = putStrLn ""
 ```
