@@ -3,24 +3,30 @@ Goals
 
 - [ ] Parse a language into HOAS
   - [x] Understand how to use HOAS
-  - [ ] Write a small program in HOAS in Haskell
-  - [ ] Compile HOAS to source in some language
+  - [x] Write a small program in HOAS in Haskell
+  - [x] Compile HOAS to source in some language
   - [ ] POC parser that outputs HOAS
 
-This is a literate haskell file. For interactive-style editing, type `make watch`, which will use [entr](http://entrproject.org/) to watch for file changes in the source.
+<b>This is a literate haskell file</b>. For interactive-style editing, type `make watch`, which will use [entr](http://entrproject.org/) to watch for file changes in the source.
 
 ```haskell
 > {-# LANGUAGE MultiParamTypeClasses, TypeSynonymInstances, FlexibleInstances, FlexibleContexts #-}
 > module Main where
 ```
 
-Starting off with the definition of HOAS from Phil Freeman's [hoas](https://github.com/paf31/haskell-slides/blob/master/hoas/HOAS.hs) talk:
+Lambda Calculus as a Basis for our Language
+===========================================
+
+Starting off with the definition of HOAS from Phil Freeman's [hoas](https://github.com/paf31/haskell-slides/blob/master/hoas/HOAS.hs) talk, (based on the [Simply Typed Lambda Calculus](https://en.wikipedia.org/wiki/Simply_typed_lambda_calculus)):
 ```haskell
 > class HOAS f where
 >   infixr 0 $$
 >   ($$) :: f (a -> b) -> f a -> f b
 >   lam :: (f a -> f b) -> f (a -> b)
 ```
+
+Building abstractions in the Simply Typed Lambda Calculus
+=========================================================
 
 As Phil put it, this is the minimal useful implementation of the lambda calculus. We've got a fair amount of primitive expression:
 
@@ -78,7 +84,7 @@ As Phil put it, this is the minimal useful implementation of the lambda calculus
 
 ... all without providing an instance of `HOAS` or concrete types.
 
-Starting with a modified version of Freeman's PPrint instance of HOAS:
+To borrow (and slightly modify) Freeman's `PPrint` instance of `HOAS`:
 ```haskell
 > data PPrint a = PPrint { prettyPrint :: Int -> String }
 >
@@ -105,6 +111,10 @@ While this is useful, without types, this is still pretty abstract. In order to 
 ```haskell
 > class HOAS f => HOASType f t where
 >   hpure :: t -> f t
+
+> instance HOASType PPrint Bool where
+>   hpure x = PPrint (\_ -> show x)
+>
 ```
 
 Again, in an attempt to keep the core language small, we can define language extensions to use these types as typeclasses as well.
@@ -112,14 +122,14 @@ Again, in an attempt to keep the core language small, we can define language ext
 ```haskell
 > class HOAS f => HOASBoolOps f where
 >   ifThenElse :: f Bool -> f a -> f a -> f a
+
+> instance HOASBoolOps PPrint where
+>   ifThenElse (PPrint pred) (PPrint ts) (PPrint fs) = PPrint (\i -> "if (" ++ (pred i) ++ ") then " ++ ts i ++ " else " ++ fs i)
 ```
 
-Now, by defining `HOASType PPrint Bool` (and a typeclass to  we can represent some simple conditional logic:
+Now we can represent some simple conditional logic:
 
 ```haskell
-> instance HOASType PPrint Bool where
->   hpure x = PPrint (\_ -> show x)
->
 > hnot :: (HOASType f Bool, HOASBoolOps f) => f (Bool -> Bool)
 > hnot = lam $ \x -> ifThenElse x (hpure False) (hpure True)
 > -- (\a0 -> if (a0) then False else True)
@@ -140,6 +150,18 @@ And as a final exercise, we can implement a simple list in our language:
 >   hmap (PPrint f) (PPrint arr) = PPrint (\i -> "map " ++ f i ++ " " ++ arr i)
 ```
 
+... which allows us to...
+
+```haskell
+> -- Generate
+> ex1 :: (HOASType f Bool, HOASListOps f, HOASBoolOps f) => f [Bool]
+> ex1 = (hmap hnot (hcons (hpure True) (hcons (hpure False) hnil)))
+> -- map (\a0 -> if (a0) then False else True) (True : (False : []))
+
+> ex1' :: [Bool] -- Output from above
+> ex1' = map (\a0 -> if (a0) then False else True) (True : (False : []))
+> -- [False,True]
+```
 
 
 
@@ -174,9 +196,6 @@ just having fun with HOAS
 > instance HOASNumOps PPrint where
 >   add (PPrint lhs) (PPrint rhs) = PPrint (\i -> lhs i ++ " + " ++ rhs i)
 >   int = hpure
-
-> instance HOASBoolOps PPrint where
->   ifThenElse (PPrint pred) (PPrint ts) (PPrint fs) = PPrint (\i -> "if (" ++ (pred i) ++ ") then " ++ ts i ++ " else " ++ fs i)
 
 > instance HOASType PPrint Int where
 >   hpure x = PPrint (\_ -> show x)
