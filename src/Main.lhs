@@ -199,7 +199,7 @@ Writing a Simple Program
 
 A little dense, but based on the type signature, we've got something that goes from `[Bool] -> Bool -> [Bool]`. Looking at the innermost lambda (in the `map`), if the current element (`x`) is equal to `toInvert`, we should flip `x`, otherwise, leave `x` as it is.
 
-Looking at the prettyPrint-ed output (not starting to get not so pretty), we can at least see our `cons` at work, and a couple `if` expressions:
+Looking at the `prettyPrint`-ed output (not starting to get not so pretty), we can at least see our `cons` at work, and a couple `if` expressions:
 
 ```haskell
 λ> putStrLn $ prettyPrint (ex2 $< ((hcons (hpure True) (hcons (hpure False) (hcons (hpure True) (hcons (hpure False) hnil))))) $< (hpure True)) 0
