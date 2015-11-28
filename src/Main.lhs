@@ -181,8 +181,37 @@ Now we can represent some simple conditional logic:
 > -- [False,True]
 ```
 
+I guess, with all this cool functionality, we should look at...
 
+Writing a Simple Program
+========================
 
+```haskell
+> ex2 :: (HOAS f, HOASBoolOps f, HOASEqOps f, HOASListOps f, HOASType f Bool) => f ([Bool] -> Bool -> [Bool])
+> ex2 = lam (\arr ->
+>         lam (\toInvert ->
+>           hmap (lam (\x ->
+>                  ifThenElse (equals $< toInvert $< x)
+>                    (hnot $< x)
+>                    x
+>                )) arr))
+```
+
+A little dense, but based on the type signature, we've got something that goes from `[Bool] -> Bool -> [Bool]`. Looking at the innermost lambda (in the `map`), if the current element (`x`) is equal to `toInvert`, we should flip `x`, otherwise, leave `x` as it is.
+
+Looking at the prettyPrint-ed output (not starting to get not so pretty), we can at least see our `cons` at work, and a couple `if` expressions:
+
+```haskell
+λ> putStrLn $ prettyPrint (ex2 $< ((hcons (hpure True) (hcons (hpure False) (hcons (hpure True) (hcons (hpure False) hnil))))) $< (hpure True)) 0
+(((\a0 -> (\a1 -> (map (\a2 -> if ((((\a3 -> (\a4 -> a3 == a4)) a1) a2)) then ((\a3 -> if (a3) then False else True) a2) else a2) a0))) (True : (False : (True : (False : []))))) True)
+```
+
+Again, while this is pretty neat, we've got to run it in order to see what it does:
+
+```haskell
+λ> (((\a0 -> (\a1 -> (map (\a2 -> if ((((\a3 -> (\a4 -> a3 == a4)) a1) a2)) then ((\a3 -> if (a3) then False else True) a2) else a2) a0))) (True : (False : (True : (False : []))))) True)
+[False,False,False,False]
+```
 
 
 
