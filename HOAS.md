@@ -1,12 +1,3 @@
-Goals
-=====
-
-- [ ] Parse a language into HOAS
-  - [x] Understand how to use HOAS
-  - [x] Write a small program in HOAS in Haskell
-  - [x] Compile HOAS to source in some language
-  - [ ] POC parser that outputs HOAS
-
 <b>This is a literate haskell file</b>. For interactive-style editing, type `make watch`, which will use [entr](http://entrproject.org/) to watch for file changes in the source.
 
 ```haskell
