@@ -50,8 +50,9 @@ As Phil put it, this is the minimal useful implementation of the lambda calculus
 
 <h6 id="pure_composition">Function composition</h6>
 ```haskell
-> hcompose :: HOAS f => f ((b -> c) -> (a -> b) -> a -> c)
-> hcompose = lam $ \g -> (lam $ \f -> lam $ \x -> g $$ (f $$ x))
+> infixr 9 $.
+> ($.) :: HOAS f => f (b -> c) -> f (a -> b) -> f (a -> c)
+> g $. f = lam $ \x -> g $$ (f $$ x)
 ```
 
 <h6 id="pure_parameter_flip">Parameter flipping</h6>
