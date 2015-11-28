@@ -272,6 +272,7 @@ Adding `String` to HOAS
 ```
 
 
+```haskell
 > instance HOASListOps HEval where
 >   hcons (HEval lhs) (HEval arr) = HEval (lhs : arr)
 >   hnil = HEval ([])
