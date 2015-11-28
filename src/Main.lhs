@@ -154,12 +154,14 @@ Now we can represent some simple conditional logic:
 >   hcons :: f a -> f [a] -> f [a]
 >   hnil :: f [a]
 >   hmap :: f (a -> b) -> f [a] -> f [b]
+>   (+++) :: f [a] -> f [a] -> f [a]
 
 > instance HOASListOps PPrint where
->   hcons (PPrint lhs) (PPrint arr) = PPrint (\i -> "(" ++ (lhs i) ++ " : " ++ (arr i) ++ ")")
+>   hcons (PPrint lhs) (PPrint arr) = PPrint (\i -> "(" ++ lhs i ++ " : " ++ arr i ++ ")")
 >   hnil = PPrint (\_ -> "[]")
 >   -- Explicitly using `map` in the generated Haskell, since we're not exposing the Functor typeclass
 >   hmap (PPrint f) (PPrint arr) = PPrint (\i -> "(map " ++ f i ++ " " ++ arr i ++ ")")
+>   PPrint lhs +++ PPrint rhs = PPrint (\i -> "(" ++ lhs i ++ " ++ " ++ rhs i ++ ")")
 ```
 
 ... which allows us to...
@@ -193,7 +195,7 @@ Implementing a HOAS -> Haskell evaluator
 ```haskell
 > data HEval a = HEval { haskellEval :: a }
 >   deriving (Show)
->
+
 > instance HOAS HEval where
 >   HEval f $$ HEval g = HEval (f $ g)
 >   lam f = HEval (\x -> haskellEval (f $ HEval x))
@@ -240,6 +242,7 @@ Adding `String` to HOAS
 >   hcons (HEval lhs) (HEval arr) = HEval (lhs : arr)
 >   hnil = HEval ([])
 >   hmap (HEval f) (HEval arr) = HEval (map f arr)
+>   HEval lhs +++ HEval rhs = HEval (lhs ++ rhs)
 
 > pprintMain :: IO ()
 > pprintMain = do
