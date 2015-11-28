@@ -122,9 +122,11 @@ Again, in an attempt to keep the core language small, we can define language ext
 ```haskell
 > class HOAS f => HOASBoolOps f where
 >   ifThenElse :: f Bool -> f a -> f a -> f a
+>   hand :: f Bool -> f Bool -> f Bool
 
 > instance HOASBoolOps PPrint where
 >   ifThenElse (PPrint pred) (PPrint ts) (PPrint fs) = PPrint (\i -> "if (" ++ (pred i) ++ ") then " ++ ts i ++ " else " ++ fs i)
+>   hand (PPrint p1) (PPrint p2) = PPrint (\i -> "(" ++ (p1 i) ++ " && " ++ (p2 i) ++ ")")
 ```
 
 Now we can represent some simple conditional logic:
@@ -135,7 +137,15 @@ Now we can represent some simple conditional logic:
 > -- (\a0 -> if (a0) then False else True)
 ```
 
-And as a final exercise, we can implement a simple list in our language:
+... and expose equality for types we know how to compare (piggybacking on Haskell's `Eq`):
+
+> class HOAS f => HOASEqOps f where
+>   equals :: Eq a => f a -> f a -> f Bool
+
+> instance HOASEqOps PPrint where
+>   equals (PPrint lhs) (PPrint rhs) = PPrint (\i -> "(" ++ lhs i ++ " == " ++ rhs i ++ ")")
+
+... and as a final exercise, we can implement a simple list in our language:
 
 ```haskell
 > class HOAS f => HOASListOps f where
@@ -147,7 +157,7 @@ And as a final exercise, we can implement a simple list in our language:
 >   hcons (PPrint lhs) (PPrint arr) = PPrint (\i -> "(" ++ (lhs i) ++ " : " ++ (arr i) ++ ")")
 >   hnil = PPrint (\_ -> "[]")
 >   -- Explicitly using `map` in the generated Haskell, since we're not exposing the Functor typeclass
->   hmap (PPrint f) (PPrint arr) = PPrint (\i -> "map " ++ f i ++ " " ++ arr i)
+>   hmap (PPrint f) (PPrint arr) = PPrint (\i -> "(map " ++ f i ++ " " ++ arr i ++ ")")
 ```
 
 ... which allows us to...
@@ -190,9 +200,6 @@ just having fun with HOAS
 > class HOAS f => HOASStringOps f where
 >   hlength :: f [a] -> f Int
 
-> class HOAS f => HOASEqOps f where
->   equals :: Eq a => f a -> f a -> f Bool
-
 > instance HOASNumOps PPrint where
 >   add (PPrint lhs) (PPrint rhs) = PPrint (\i -> lhs i ++ " + " ++ rhs i)
 >   int = hpure
@@ -205,9 +212,6 @@ just having fun with HOAS
 
 > instance HOASStringOps PPrint where
 >   hlength (PPrint xs) = PPrint (\i -> "length " ++ xs i)
-
-> instance HOASEqOps PPrint where
->   equals (PPrint lhs) (PPrint rhs) = PPrint (\i -> lhs i ++ " == " ++ rhs i)
 
 
 > instance HOASType HEval Int where
