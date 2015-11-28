@@ -87,7 +87,7 @@ As Phil put it, this is the minimal useful implementation of the lambda calculus
 To borrow (and slightly modify) Freeman's `PPrint` instance of `HOAS`:
 ```haskell
 > data PPrint a = PPrint { prettyPrint :: Int -> String }
->
+
 > instance HOAS PPrint where
 >   PPrint f $$ PPrint g = PPrint (\i -> "(" ++ (f i) ++ " $ " ++ (g i) ++ ")")
 >   lam f = PPrint (\i -> "(\\" ++ name i ++ " -> " ++ prettyPrint (f (PPrint (\_ -> name i))) (i + 1) ++ ")")
@@ -114,7 +114,7 @@ While this is useful, without types, this is still pretty abstract. In order to 
 
 > instance HOASType PPrint Bool where
 >   hpure x = PPrint (\_ -> show x)
->
+
 ```
 
 Again, in an attempt to keep the core language small, we can define language extensions to use these types as typeclasses as well.
@@ -154,7 +154,7 @@ Now we can represent some simple conditional logic:
 >   hcons :: f a -> f [a] -> f [a]
 >   hnil :: f [a]
 >   hmap :: f (a -> b) -> f [a] -> f [b]
->
+
 > instance HOASListOps PPrint where
 >   hcons (PPrint lhs) (PPrint arr) = PPrint (\i -> "(" ++ (lhs i) ++ " : " ++ (arr i) ++ ")")
 >   hnil = PPrint (\_ -> "[]")
