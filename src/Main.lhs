@@ -22,6 +22,8 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 > class HOAS f where
 >   infixr 0 $$
 >   ($$) :: f (a -> b) -> f a -> f b
+>   infixl 9 $< -- For now, let's emulate Haskell's call semantics
+>   ($<) :: f (a -> b) -> f a -> f b
 >   lam :: (f a -> f b) -> f (a -> b)
 ```
 
@@ -90,6 +92,7 @@ To borrow (and slightly modify) Freeman's `PPrint` instance of `HOAS`:
 
 > instance HOAS PPrint where
 >   PPrint f $$ PPrint g = PPrint (\i -> "(" ++ (f i) ++ " $ " ++ (g i) ++ ")")
+>   PPrint f $< PPrint x = PPrint (\i -> "(" ++ (f i) ++ " " ++ (x i) ++ ")")
 >   lam f = PPrint (\i -> "(\\" ++ name i ++ " -> " ++ prettyPrint (f (PPrint (\_ -> name i))) (i + 1) ++ ")")
 >     where
 >     name :: Int -> String
@@ -141,10 +144,11 @@ Now we can represent some simple conditional logic:
 
 ```haskell
 > class HOAS f => HOASEqOps f where
->   equals :: Eq a => f a -> f a -> f Bool
+>   equals :: Eq a => f (a -> a -> Bool)
 
 > instance HOASEqOps PPrint where
->   equals (PPrint lhs) (PPrint rhs) = PPrint (\i -> "(" ++ lhs i ++ " == " ++ rhs i ++ ")")
+    equals (PPrint lhs) (PPrint rhs) = PPrint (\i -> "(" ++ lhs i ++ " == " ++ rhs i ++ ")")
+>   equals = lam (\lhs -> lam (\rhs -> PPrint (\i -> (prettyPrint lhs i) ++ " == " ++ (prettyPrint rhs i))))
 ```
 
 ... and as a final exercise, we can implement a simple list in our language:
@@ -197,8 +201,9 @@ Implementing a HOAS -> Haskell evaluator
 >   deriving (Show)
 
 > instance HOAS HEval where
->   HEval f $$ HEval g = HEval (f $ g)
+>   HEval f $$ HEval g = HEval (f g)
 >   lam f = HEval (\x -> haskellEval (f $ HEval x))
+>   HEval f $< HEval x = HEval (f x)
 ```
 
 Adding `Int`/`Num a` to HOAS
@@ -254,13 +259,13 @@ Adding `String` to HOAS
 >   putStrLn $ prettyPrint (hcons (hpure True) (ifThenElse (hnot $$ (hpure True)) (hcons (hpure False) (hcons (hpure True) hnil)) hnil)) 0
 >   putStrLn $ prettyPrint (hcons
 >                                 (int 0)
->                                 (ifThenElse (equals (add (int 23) (int 27)) (int 50))
+>                                 (ifThenElse (equals $< (add (int 23) (int 27)) $< (int 50))
 >                                   (hcons (int 1) (hcons (int 2) (hcons (int 3) hnil)))
 >                                   hnil
 >                                 )
 >                          ) 0
->   putStrLn $ prettyPrint (ifThenElse (equals (hlength (hcons (hpure True) hnil)) (hpure 0)) (hpure True) (hpure False)) 0
->   putStrLn $ prettyPrint (equals (hlength (hcons (hpure True) hnil)) (hpure 0)) 0
+>   putStrLn $ prettyPrint (ifThenElse (equals $< (hlength (hcons (hpure True) hnil)) $< (hpure 0)) (hpure True) (hpure False)) 0
+>   putStrLn $ prettyPrint (equals $< (hlength (hcons (hpure True) hnil)) $< (hpure 0)) 0
 >   putStrLn $ prettyPrint (hmap (lam hlength) (hcons (hpure "foo") (hcons (hpure "bar") (hcons (hpure "baz") hnil)))) 0
 ```
 
