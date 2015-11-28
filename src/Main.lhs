@@ -233,6 +233,12 @@ Implementing a HOAS -> Haskell evaluator
 >   HEval f $$ HEval g = HEval (f g)
 >   lam f = HEval (\x -> haskellEval (f $ HEval x))
 >   HEval f $< HEval x = HEval (f x)
+
+> instance HOASListOps HEval where
+>   hcons (HEval lhs) (HEval arr) = HEval (lhs : arr)
+>   hnil = HEval ([])
+>   hmap (HEval f) (HEval arr) = HEval (map f arr)
+>   HEval lhs +++ HEval rhs = HEval (lhs ++ rhs)
 ```
 
 Adding `Int`/`Num a` to HOAS
@@ -265,42 +271,51 @@ Adding `String` to HOAS
 >   hpure x = PPrint (\_ -> show x)
 
 > class HOAS f => HOASStringOps f where
->   hlength :: f [a] -> f Int
+>   hlength :: HOASType f Int => f [a] -> f Int
 
 > instance HOASStringOps PPrint where
 >   hlength (PPrint xs) = PPrint (\i -> "length " ++ xs i)
 ```
 
-
 ```haskell
-> instance HOASListOps HEval where
->   hcons (HEval lhs) (HEval arr) = HEval (lhs : arr)
->   hnil = HEval ([])
->   hmap (HEval f) (HEval arr) = HEval (map f arr)
->   HEval lhs +++ HEval rhs = HEval (lhs ++ rhs)
+> -- Simple ITE/Boolean test
+> ex'1 :: (HOAS f, HOASBoolOps f, HOASType f Bool) => f Bool
+> ex'1 = (ifThenElse (hnot $< (hpure True)) (hpure False) (hpure True))
 
-> pprintMain :: IO ()
-> pprintMain = do
->   putStrLn $ prettyPrint (ifThenElse (hnot $$ (hpure True)) (hpure False) (hpure True)) 0
->   putStrLn $ prettyPrint (hmap hnot (hcons (hpure True) (hcons (hpure False) hnil))) 0
->   putStrLn $ prettyPrint hnot 0
->   putStrLn $ prettyPrint (int 123) 0
->   putStrLn $ prettyPrint (hpure "string?") 0
->   putStrLn $ prettyPrint (hcons (hpure True) (ifThenElse (hnot $$ (hpure True)) (hcons (hpure False) (hcons (hpure True) hnil)) hnil)) 0
->   putStrLn $ prettyPrint (hcons
->                                 (int 0)
->                                 (ifThenElse (equals $< (add (int 23) (int 27)) $< (int 50))
->                                   (hcons (int 1) (hcons (int 2) (hcons (int 3) hnil)))
->                                   hnil
->                                 )
->                          ) 0
->   putStrLn $ prettyPrint (ifThenElse (equals $< (hlength (hcons (hpure True) hnil)) $< (hpure 0)) (hpure True) (hpure False)) 0
->   putStrLn $ prettyPrint (equals $< (hlength (hcons (hpure True) hnil)) $< (hpure 0)) 0
->   putStrLn $ prettyPrint (hmap (lam hlength) (hcons (hpure "foo") (hcons (hpure "bar") (hcons (hpure "baz") hnil)))) 0
+> -- Map `not` over a list
+> ex'2 :: (HOAS f, HOASType f Bool, HOASBoolOps f, HOASListOps f) => f [Bool]
+> ex'2 = hmap hnot (hcons (hpure True) (hcons (hpure False) hnil))
+
+> -- Testing literals
+> ex'3a :: HOASNumOps f => f Int
+> ex'3a = (int 123)
+> ex'3b :: HOASType f String => f String
+> ex'3b = (hpure "string?")
+
+> -- Prepend to a conditionally generated list
+> ex'4 :: (HOASType f Bool, HOASBoolOps f, HOASListOps f) => f [Bool]
+> ex'4 = (hcons (hpure True) (ifThenElse (hnot $$ (hpure True)) (hcons (hpure False) (hcons (hpure True) hnil)) hnil))
+
+> ex'5 :: (HOASListOps f, HOASType f Bool, HOASBoolOps f, HOASType f Int, HOASNumOps f, HOASEqOps f) => f [Int]
+> ex'5 = (
+>          hcons
+>            (int 0)
+>            (ifThenElse (equals $< (add (int 23) (int 27)) $< (int 50))
+>              (hcons (int 1) (hcons (int 2) (hcons (int 3) hnil)))
+>              hnil
+>            )
+>        )
+
+> -- Compare length of a list
+> ex'6 :: (HOASListOps f, HOASEqOps f, HOASStringOps f, HOASType f Bool, HOASType f Int) => f Bool
+> ex'6 = (equals $< (hlength (hcons (hpure True) hnil)) $< (hpure 0))
+
+> -- Map length over a list of strings
+> ex'7 :: (HOASType f Int, HOASType f String, HOASListOps f, HOASStringOps f) => f [Int]
+> ex'7 = (hmap (lam hlength) (hcons (hpure "a") (hcons (hpure "be") (hcons (hpure "cee") hnil))))
 ```
 
 ```haskell
 > main :: IO ()
-> main = do
->   pprintMain
+> main = putStrLn ""
 ```
