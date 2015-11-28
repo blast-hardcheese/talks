@@ -139,11 +139,13 @@ Now we can represent some simple conditional logic:
 
 ... and expose equality for types we know how to compare (piggybacking on Haskell's `Eq`):
 
+```haskell
 > class HOAS f => HOASEqOps f where
 >   equals :: Eq a => f a -> f a -> f Bool
 
 > instance HOASEqOps PPrint where
 >   equals (PPrint lhs) (PPrint rhs) = PPrint (\i -> "(" ++ lhs i ++ " == " ++ rhs i ++ ")")
+```
 
 ... and as a final exercise, we can implement a simple list in our language:
 
