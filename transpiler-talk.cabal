@@ -16,4 +16,6 @@ executable transpiler-talk
   main-is:             Main.lhs
   default-language:    Haskell2010
   build-depends:       base >= 4.7 && < 5
+                     , attoparsec >= 0.13 && < 0.14
+                     , bytestring >= 0.10 && < 0.11
   ghc-options:         -optL -q
