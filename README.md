@@ -25,7 +25,7 @@ Starting off with the definition of HOAS from Phil Freeman's [hoas](https://gith
 > class HOAS f where
 >   infixr 0 $$
 >   ($$) :: f (a -> b) -> f a -> f b
->   infixl 9 $< -- For now, let's emulate Haskell's call semantics
+>   infixl 9 $< -- Provide a parameter to allow left-associated applies
 >   ($<) :: f (a -> b) -> f a -> f b
 >   lam :: (f a -> f b) -> f (a -> b)
 ```
