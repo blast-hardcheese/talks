@@ -250,9 +250,25 @@ Javascript
 > instance HOASType PrettyJS Bool where
 >   hpure True = PrettyJS $ \_ -> "true"
 >   hpure False = PrettyJS $ \_ -> "false"
+```
 
-> instance HOASEqOps PrettyJS where
->   equals = lam (\lhs -> lam (\rhs -> PrettyJS (\i -> (prettyJS lhs i) ++ " == " ++ (prettyJS rhs i))))
+One important note here, because HOAS is a collection of typeclasses, each expression knows which language it is safe to compile against. If a language doesn't implement all typeclasses, (we've left `HOASEqOps` commented out here)...
+
+```haskell
+  instance HOASEqOps PrettyJS where
+    equals = lam (\lhs -> lam (\rhs -> PrettyJS (\i -> (prettyJS lhs i) ++ " == " ++ (prettyJS rhs i))))
+```
+
+... we can see very clearly what we're missing:
+
+```
+λ> putStrLn $ prettyJS ex2 0
+
+<interactive>:4:21:
+    No instance for (HOASEqOps PrettyJS) arising from a use of ‘ex2’
+    In the first argument of ‘prettyJS’, namely ‘ex2’
+    In the second argument of ‘($)’, namely ‘prettyJS ex2 0’
+    In the expression: putStrLn $ prettyJS ex2 0
 ```
 
 Ignore this stuff for now
