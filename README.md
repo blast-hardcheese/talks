@@ -147,7 +147,6 @@ Now we can represent some simple conditional logic:
 >   equals :: Eq a => f (a -> a -> Bool)
 
 > instance HOASEqOps PPrint where
-    equals (PPrint lhs) (PPrint rhs) = PPrint (\i -> "(" ++ lhs i ++ " == " ++ rhs i ++ ")")
 >   equals = lam (\lhs -> lam (\rhs -> PPrint (\i -> (prettyPrint lhs i) ++ " == " ++ (prettyPrint rhs i))))
 ```
 
