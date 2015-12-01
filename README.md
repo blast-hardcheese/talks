@@ -1,11 +1,14 @@
 Goals
 =====
 
-- [ ] Parse a language into HOAS
-  - [x] Understand how to use HOAS
-  - [x] Write a small program in HOAS in Haskell
-  - [x] Compile HOAS to source in some language
-  - [ ] POC parser that outputs HOAS
+1. Explore the Simply Typed Lambda Calculus
+2. Write some simple programs in a language embedded in Haskell
+3. Compile programs written in this language into runnable code
+4. Extend the language with types
+
+Extra credit
+------------
+* Provide more implementations
 
 <b>This is a literate haskell file</b>. For interactive-style editing, type `make watch`, which will use [entr](http://entrproject.org/) to watch for file changes in the source.
 
