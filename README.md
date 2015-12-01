@@ -271,11 +271,6 @@ One important note here, because HOAS is a collection of typeclasses, each expre
     In the expression: putStrLn $ prettyJS ex2 0
 ```
 
-Ignore this stuff for now
-=========================
-
-just having fun with HOAS.
-
 Implementing a HOAS -> Haskell evaluator
 ----------------------------------------
 
@@ -304,6 +299,11 @@ Implementing a HOAS -> Haskell evaluator
 > instance HOASStringOps HEval where
 >   hlength (HEval xs) = HEval (length xs)
 ```
+
+Ignore this stuff for now
+=========================
+
+just having fun with HOAS.
 
 Adding `Int`/`Num a` to HOAS
 ----------------------
