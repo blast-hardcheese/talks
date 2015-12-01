@@ -312,6 +312,47 @@ Since we've got a fully abstract call tree, we can actually flatten this down to
 > runHEval expr = haskellEval expr
 ```
 
+We can even generate well-typed Python:
+
+Python
+------
+```haskell
+> data PrettyPython a = PrettyPython { prettyPython :: Int -> String }
+
+> instance HOAS PrettyPython where
+>   PrettyPython f $$ PrettyPython g = PrettyPython (\i -> "(" ++ (f i) ++ ")(" ++ (g i) ++ ")")
+>   PrettyPython f $< PrettyPython x = PrettyPython (\i -> "(" ++ (f i) ++ ")(" ++ (x i) ++ ")")
+>   lam f = PrettyPython (\i -> "(lambda " ++ name i ++ ": " ++ prettyPython (f (PrettyPython (\_ -> name i))) (i + 1) ++ ")")
+>     where
+>     name :: Int -> String
+>     name i = "a" ++ show i
+
+> instance HOASListOps PrettyPython where
+>   hcons (PrettyPython lhs) (PrettyPython arr) = PrettyPython (\i -> "([" ++ lhs i ++ "] + " ++ arr i ++ ")")
+>   hnil = PrettyPython (\_ -> "[]")
+>   hmap (PrettyPython f) (PrettyPython arr) = PrettyPython (\i -> "map(" ++ f i ++ ", " ++ arr i ++ ")")
+>   PrettyPython lhs +++ PrettyPython rhs = PrettyPython (\i -> "((" ++ lhs i ++ ") + (" ++ rhs i ++ "))")
+
+> instance HOASBoolOps PrettyPython where
+>   ifThenElse (PrettyPython pred) (PrettyPython ts) (PrettyPython fs) = PrettyPython (\i -> "(" ++ ts i ++ ") if (" ++ (pred i) ++ ") else (" ++ fs i ++ ")")
+>   hand (PrettyPython p1) (PrettyPython p2) = PrettyPython (\i -> "(" ++ (p1 i) ++ " and " ++ (p2 i) ++ ")")
+
+> instance HOASType PrettyPython String where
+>   hpure x = PrettyPython (\_ -> show x)
+
+> instance HOASStringOps PrettyPython where
+>   hlength (PrettyPython xs) = PrettyPython (\i -> "len(" ++ xs i ++ ")")
+
+> instance HOASType PrettyPython Bool where
+>   hpure True = PrettyPython $ \_ -> "True"
+>   hpure False = PrettyPython $ \_ -> "False"
+
+> instance HOASEqOps PrettyPython where
+>   equals = lam (\lhs -> lam (\rhs -> PrettyPython (\i -> (prettyPython lhs i) ++ " == " ++ (prettyPython rhs i))))
+
+> runPrettyPython expr = prettyPython expr 0
+```
+
 More types!
 ===========
 
