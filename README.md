@@ -238,11 +238,10 @@ Javascript
 >     name i = "a" ++ show i
 
 > instance HOASListOps PrettyJS where
->   hcons (PrettyJS lhs) (PrettyJS arr) = PrettyJS (\i -> "(" ++ lhs i ++ " : " ++ arr i ++ ")")
+>   hcons (PrettyJS lhs) (PrettyJS arr) = PrettyJS (\i -> "([" ++ lhs i ++ "]).concat(" ++ arr i ++ ")")
 >   hnil = PrettyJS (\_ -> "[]")
->   -- Explicitly using `map` in the generated Haskell, since we're not exposing the Functor typeclass
 >   hmap (PrettyJS f) (PrettyJS arr) = PrettyJS (\i -> arr i ++ ".map(" ++ f i ++ ")")
->   PrettyJS lhs +++ PrettyJS rhs = PrettyJS (\i -> "(" ++ lhs i ++ " ++ " ++ rhs i ++ ")")
+>   PrettyJS lhs +++ PrettyJS rhs = PrettyJS (\i -> "(" ++ lhs i ++ ").concat(" ++ rhs i ++ ")")
 
 > instance HOASBoolOps PrettyJS where
 >   ifThenElse (PrettyJS pred) (PrettyJS ts) (PrettyJS fs) = PrettyJS (\i -> "(" ++ (pred i) ++ ") ? " ++ ts i ++ " : " ++ fs i)
