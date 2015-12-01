@@ -282,6 +282,8 @@ One important note here, because HOAS is a collection of typeclasses, each expre
 Implementing a HOAS -> Haskell evaluator
 ----------------------------------------
 
+Since we've got a fully abstract call tree, we can actually flatten this down to plain Haskell as well. Type constraints (`Eq`, for instance) will be preserved, so this is sort of like a Haskell sandbox:
+
 ```haskell
 > data HEval a = HEval { haskellEval :: a }
 >   deriving (Show)
