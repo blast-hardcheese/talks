@@ -300,13 +300,11 @@ Implementing a HOAS -> Haskell evaluator
 >   hlength (HEval xs) = HEval (length xs)
 ```
 
-Ignore this stuff for now
-=========================
+More types!
+===========
 
-just having fun with HOAS.
-
-Adding `Int`/`Num a` to HOAS
-----------------------
+Adding `Int`/`Num a`
+--------------------
 ```haskell
 > instance HOASType PPrint Int where
 >   hpure x = PPrint (\_ -> show x)
@@ -327,8 +325,8 @@ Adding `Int`/`Num a` to HOAS
 >   int = hpure
 ```
 
-Adding `String` to HOAS
------------------------
+Adding `String`
+---------------
 
 ```haskell
 > instance HOASType PPrint String where
@@ -340,6 +338,9 @@ Adding `String` to HOAS
 > instance HOASStringOps PPrint where
 >   hlength (PPrint xs) = PPrint (\i -> "length " ++ xs i)
 ```
+
+More example expressions
+========================
 
 ```haskell
 > -- Simple ITE/Boolean test
