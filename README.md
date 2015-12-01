@@ -98,6 +98,13 @@ To borrow (and slightly modify) Freeman's `PPrint` instance of `HOAS`:
 >     name :: Int -> String
 >     name i = "a" ++ show i
 ```
+
+... with a small convenience function to make evaluation easier:
+
+```haskell
+> runPretty expr = prettyPrint expr 0
+```
+
 we can now print the representations of the pure functons we defined above:
 
 ```haskell
@@ -250,6 +257,8 @@ Javascript
 > instance HOASType PrettyJS Bool where
 >   hpure True = PrettyJS $ \_ -> "true"
 >   hpure False = PrettyJS $ \_ -> "false"
+
+> runPrettyJS expr = prettyJS expr 0
 ```
 
 One important note here, because HOAS is a collection of typeclasses, each expression knows which language it is safe to compile against. If a language doesn't implement all typeclasses, (we've left `HOASEqOps` commented out here)...
@@ -298,6 +307,8 @@ Implementing a HOAS -> Haskell evaluator
 
 > instance HOASEqOps HEval where
 >   equals = lam (\lhs -> lam (\rhs -> HEval $ (haskellEval lhs) == (haskellEval rhs)))
+
+> runHEval expr = haskellEval expr
 ```
 
 More types!
