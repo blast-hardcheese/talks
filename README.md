@@ -212,9 +212,48 @@ Again, while this is pretty neat, we've got to run it in order to see what it do
 [False,False,False,False]
 ```
 
+Flexibility of implementation
+=============================
 
+Something worth mentioning is that all of our expressions are of the type `HOAS f => f a`, meaning we don't need to choose an implementation of `HOAS` up front. Let's define some other implementations to see how this works:
 
+Javascript
+----------
+```haskell
+> data PrettyJS a = PrettyJS { prettyJS :: Int -> String }
 
+> instance HOAS PrettyJS where
+>   PrettyJS f $$ PrettyJS g = PrettyJS (\i -> "(" ++ (f i) ++ ")(" ++ (g i) ++ ")")
+>   PrettyJS f $< PrettyJS x = PrettyJS (\i -> "(" ++ (f i) ++ ")(" ++ (x i) ++ ")")
+>   lam f = PrettyJS (\i -> "(function(" ++ name i ++ ") { return " ++ prettyJS (f (PrettyJS (\_ -> name i))) (i + 1) ++ "; })")
+>     where
+>     name :: Int -> String
+>     name i = "a" ++ show i
+
+> instance HOASListOps PrettyJS where
+>   hcons (PrettyJS lhs) (PrettyJS arr) = PrettyJS (\i -> "(" ++ lhs i ++ " : " ++ arr i ++ ")")
+>   hnil = PrettyJS (\_ -> "[]")
+>   -- Explicitly using `map` in the generated Haskell, since we're not exposing the Functor typeclass
+>   hmap (PrettyJS f) (PrettyJS arr) = PrettyJS (\i -> arr i ++ ".map(" ++ f i ++ ")")
+>   PrettyJS lhs +++ PrettyJS rhs = PrettyJS (\i -> "(" ++ lhs i ++ " ++ " ++ rhs i ++ ")")
+
+> instance HOASBoolOps PrettyJS where
+>   ifThenElse (PrettyJS pred) (PrettyJS ts) (PrettyJS fs) = PrettyJS (\i -> "(" ++ (pred i) ++ ") ? " ++ ts i ++ " : " ++ fs i)
+>   hand (PrettyJS p1) (PrettyJS p2) = PrettyJS (\i -> "(" ++ (p1 i) ++ " && " ++ (p2 i) ++ ")")
+
+> instance HOASType PrettyJS String where
+>   hpure x = PrettyJS (\_ -> show x)
+
+> instance HOASStringOps PrettyJS where
+>   hlength (PrettyJS xs) = PrettyJS (\i -> xs i ++ ".length")
+
+> instance HOASType PrettyJS Bool where
+>   hpure True = PrettyJS $ \_ -> "true"
+>   hpure False = PrettyJS $ \_ -> "false"
+
+> instance HOASEqOps PrettyJS where
+>   equals = lam (\lhs -> lam (\rhs -> PrettyJS (\i -> (prettyJS lhs i) ++ " == " ++ (prettyJS rhs i))))
+```
 
 Ignore this stuff for now
 =========================
