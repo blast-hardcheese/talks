@@ -292,12 +292,6 @@ Implementing a HOAS -> Haskell evaluator
 > instance HOASBoolOps HEval where
 >   ifThenElse (HEval pred) (HEval ts) (HEval fs) = HEval (if (pred) then ts else fs)
 >   hand (HEval p1) (HEval p2) = HEval (p1 && p2)
-
-> instance HOASType HEval String where
->   hpure = HEval
-
-> instance HOASStringOps HEval where
->   hlength (HEval xs) = HEval (length xs)
 ```
 
 More types!
@@ -305,20 +299,27 @@ More types!
 
 Adding `Int`/`Num a`
 --------------------
+
+```haskell
+> class HOAS f => HOASNumOps f where
+>   add :: Num n => f n -> f n -> f n
+>   int :: Int -> f Int
+```
+
+<h6 id="pprint-int">`PPrint`</h6>
 ```haskell
 > instance HOASType PPrint Int where
 >   hpure x = PPrint (\_ -> show x)
 
-> instance HOASType HEval Int where
->   hpure x = HEval x
-
-> class HOAS f => HOASNumOps f where
->   add :: Num n => f n -> f n -> f n
->   int :: Int -> f Int
-
 > instance HOASNumOps PPrint where
 >   add (PPrint lhs) (PPrint rhs) = PPrint (\i -> lhs i ++ " + " ++ rhs i)
 >   int = hpure
+```
+
+<h6 id="heval-int">`HEval`</h6>
+```haskell
+> instance HOASType HEval Int where
+>   hpure x = HEval x
 
 > instance HOASNumOps HEval where
 >   add (HEval lhs) (HEval rhs) = HEval (lhs + rhs)
@@ -329,14 +330,26 @@ Adding `String`
 ---------------
 
 ```haskell
+> class HOAS f => HOASStringOps f where
+>   hlength :: HOASType f Int => f [a] -> f Int
+```
+
+<h6 id="pprint-string">`PPrint`</h6>
+```haskell
 > instance HOASType PPrint String where
 >   hpure x = PPrint (\_ -> show x)
 
-> class HOAS f => HOASStringOps f where
->   hlength :: HOASType f Int => f [a] -> f Int
-
 > instance HOASStringOps PPrint where
 >   hlength (PPrint xs) = PPrint (\i -> "length " ++ xs i)
+```
+
+<h6 id="heval-string">`HEval`</h6>
+```haskell
+> instance HOASType HEval String where
+>   hpure = HEval
+
+> instance HOASStringOps HEval where
+>   hlength (HEval xs) = HEval $ length xs
 ```
 
 More example expressions
