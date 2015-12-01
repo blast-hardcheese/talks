@@ -289,9 +289,15 @@ Implementing a HOAS -> Haskell evaluator
 >   hmap (HEval f) (HEval arr) = HEval (map f arr)
 >   HEval lhs +++ HEval rhs = HEval (lhs ++ rhs)
 
+> instance HOASType HEval Bool where
+>   hpure = HEval
+
 > instance HOASBoolOps HEval where
 >   ifThenElse (HEval pred) (HEval ts) (HEval fs) = HEval (if (pred) then ts else fs)
 >   hand (HEval p1) (HEval p2) = HEval (p1 && p2)
+
+> instance HOASEqOps HEval where
+>   equals = lam (\lhs -> lam (\rhs -> HEval $ (haskellEval lhs) == (haskellEval rhs)))
 ```
 
 More types!
