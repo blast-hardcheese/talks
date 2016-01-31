@@ -359,12 +359,12 @@ Python
 More types!
 ===========
 
-Adding `Int`/`Num a`
+Adding `Int`
 --------------------
 
 ```haskell
 > class HOAS f => HOASNumOps f where
->   add :: Num n => f n -> f n -> f n
+>   add :: f Int -> f Int -> f Int
 >   int :: Int -> f Int
 ```
 
