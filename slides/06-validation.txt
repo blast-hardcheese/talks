@@ -1,0 +1,102 @@
+Validation
+---
+Applicative:
+  point: A => F[A]
+  ap: F[A] => F[A => B] => F[B]
+--
+  lift:  ( A      => B) =>  F[A]              => F[B]
+--
+  lift2: ((A,B)   => C) => (F[A], F[B])       => F[C]
+--
+  lift3: ((A,B,C) => D) => (F[A], F[B], F[C]) => F[D]
+  ...
+---
+```
+import scalaz.Applicative
+
+case class Foo[T](x: T)
+
+implicit object ApplicativeFoo extends Applicative[Foo] {
+  def point[A](a: => A): Foo[A] = Foo(a)
+  def ap[A, B](fa: => Foo[A])(f: => Foo[A => B]): Foo[B] = Foo(f.x(fa.x))
+}
+
+case class Bar[T](accum: String, x: T)
+
+implicit object ApplicativeBar extends Applicative[Bar] {
+  def point[A](a: => A): Bar[A] = Bar(a.toString, a)
+  def ap[A, B](fa: => Bar[A])(f: => Bar[A => B]): Bar[B] = Bar(
+    s"(${f.accum} ${fa.accum})",
+    f.x(fa.x))
+}
+```
+---
+Validation:
+
+```
+import scalaz.{ NonEmptyList, Validation }
+import scalaz.syntax.validation._
+
+type ValidOrErrorStrings[T] = Validation[NonEmptyList[String], T]
+```
+---
+```
+type RawUsername = String
+object Username extends Tagger[String]
+type Username = Username.Type
+
+val validateUsername: RawUsername => ValidOrErrorStrings[Username] = {
+  case "" => "Username must not be empty!".failureNel
+
+  case x if Set("foo", "bar", "baz").contains(x) =>
+    s"${x} is not a valid username!".failureNel
+
+  case x if x.length > 16 => "Username is too long!".failureNel
+
+  case valid => Username(valid).successNel
+}
+```
+---
+```
+import uk.gov.hmrc.emailaddress.EmailAddress
+type RawEmail = String
+object Email extends Tagger[String]
+type Email = Email.Type
+
+val validateEmail: RawEmail => ValidOrErrorStrings[Email] = {
+  case "" => "Email must not be empty!".failureNel
+
+  case x if x.endsWith("@example.com") =>
+    "Please use a valid domain!".failureNel
+
+  case x if !EmailAddress.isValid(x) => "Invalid email!".failureNel
+
+  case valid => Email(valid).successNel
+}
+```
+---
+```
+case class User(id: Long, username: Username, email: Email)
+
+def createUser[F[_]](id: Long, username: RawUsername, email: RawEmail
+    )(applicative: Applicative[F]): F[User] = {
+  val ValidUser = applicative.lift3(User)
+
+  ValidUser(
+    applicative.pure(id),
+    validateUsername(username),
+    validateEmail(email)
+  )
+}
+```
+--
+
+```
+val validUser = createUser(123L, "neo", "tanderson@metacortex.com")
+```
+--
+
+```
+val invalidUser = createUser(123L, "foo", "bar@example.com")
+```
+---

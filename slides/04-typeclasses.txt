@@ -1,0 +1,128 @@
+"Type classes"
+---
+Definitions
+
+```
+    type AnnouncementId = Long
+    type UserId = Long
+    type Username = String
+
+    case class Image(url: String)
+
+    case class Announcement(id: AnnouncementId,
+                            title: String,
+                            thumbnail: Image,
+                            text: String)
+
+    case class User(id: UserId,
+                    username: Username,
+                    profileImage: Image)
+```
+---
+Behavior:
+
+```
+@scala.annotation.implicitNotFound(
+  "No type class Presentable in scope for ${T}")
+trait Presentable[T] {
+  def title(elem: T): String
+  def displayImage(elem: T): Image
+}
+
+object Presentable {
+  def title[T](elem: T
+    )(implicit ev: Presentable[T]
+    ) = ev.title(elem)
+
+  def displayImage[T](elem: T
+    )(implicit ev: Presentable[T]
+    ) = ev.displayImage(elem)
+}
+```
+---
+Instances
+
+```
+implicit object PresentableAnnouncement extends Presentable[Announcement] {
+  def title(elem: Announcement) = elem.title
+  def displayImage(elem: Announcement) = elem.thumbnail
+}
+
+implicit object PresentableUser extends Presentable[User] {
+  def title(elem: User) = elem.username
+  def displayImage(elem: User) = elem.profileImage
+}
+```
+---
+What do we get?
+
+```
+val user = User(
+  id=500L,
+  username="testuser",
+  profileImage=Image("http://example.com/500/profile.png"))
+
+val userTitle = Presentable.title(user)
+val userImage = Presentable.displayImage(user)
+```
+---
+
+Easily extended
+
+```
+type PostId = Long
+case class Post(id: PostId, title: String, thumbnail: Image)
+implicit object PresentablePost extends Presentable[Post] {
+  def title(elem: Post) = elem.title
+  def displayImage(elem: Post) = elem.thumbnail
+}
+
+val post = Post(
+  id=100L,
+  title="Hello, world!",
+  thumbnail=Image("http://example.com/100/thumb.png"))
+
+val title = Presentable.title(post)
+val image = Presentable.displayImage(post)
+```
+---
+Easier:
+
+```
+object Presentable2 {
+  def title(elem: Any): String = elem match {
+    case elem: Announcement => elem.title
+    case elem: User => elem.username
+  }
+
+  def displayImage(elem: Any): Image = elem match {
+    case elem: Announcement => elem.thumbnail
+    case elem: User => elem.profileImage
+  }
+}
+```
+--
+
+```
+val userTitle2 = Presentable2.title(user)
+val userImage2 = Presentable2.displayImage(user)
+```
+--
+
+```
+lazy val postTitle2 = Presentable2.title(post)
+```
+# Nothing's perfect, the users will understand
+--
+```
+println(postTitle2)
+```
+---
+Why?
+--
+
+* Core doesn't change very much
+--
+
+* All behavior is defined in the same place (+1 for readability!)
+---

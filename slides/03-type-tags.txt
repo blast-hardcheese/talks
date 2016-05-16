@@ -1,0 +1,103 @@
+
+Type Tagging
+
+```
+trait Tagger[T] {
+  sealed trait Internal
+  type Type = T with Internal
+
+  def apply(value: T): Type = value.asInstanceOf[Type]
+  def unapply(value: Type): Option[T] = Some(value)
+}
+
+object UserId extends Tagger[Long]
+type UserId = UserId.Type
+```
+--
+
+```
+// Pack
+val id = UserId(12345L)
+
+// Unpack
+val UserId(_id) = id
+```
+---
+What? Why? It's still just a Long, right?
+---
+Code
+# Lets look at some code
+---
+```
+object FirstName extends Tagger[String]
+type FirstName = FirstName.Type
+
+object LastName extends Tagger[String]
+type LastName = LastName.Type
+
+object FormattedName extends Tagger[String]
+type FormattedName = FormattedName.Type
+```
+---
+```
+val fn = FirstName("Thomas")
+val ln = LastName("Anderson")
+
+// (FirstName, LastName) => String
+val formatName: (FirstName, LastName) => FormattedName = {
+  case (FirstName(first), LastName(last)) =>
+    FormattedName(s"${first} ${last}")
+}
+```
+--
+
+```
+formatName(fn, ln)
+```
+--
+```
+formatName(ln, fn)
+```
+---
+(FirstName, LastName) => FormattedName
+
+Descriptive types for \*everything\s?
+---
+
+Easier:
+
+```
+val fn: String = "Thomas"
+val ln: String = "Anderson"
+
+def formatName(first: String, last: String): String = {
+  s"${first} ${last}"
+}
+
+formatName(fn, ln)
+
+// Works! Bonus!
+formatName(ln, fn)
+```
+---
+
+Why?
+--
+
+* Types are already defined for us
+--
+
+* Everyone already understands the types
+
+  (String, String) => String
+  // How hard would it be to implement this? #InternProject
+--
+
+* Maximum flexibility
+
+```
+  def formatAddress(number: String, name: String): String =
+    formatName(number, name)
+```
+# Two methods for the price of one!
+---

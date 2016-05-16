@@ -1,0 +1,169 @@
+Lens
+--
+```
+import shapeless.{ lens, Lens }
+
+case class Foo(i: Int, s: String)
+case class Bar(f1: Foo, f2: Foo)
+case class Baz(b1: Bar, b2: Bar)
+
+val baz = Baz(
+  Bar(Foo(1, "First"), Foo(2, "Second")),
+  Bar(Foo(3, "Third"), Foo(4, "Fourth"))
+)
+```
+--
+
+```
+val bazF1s = lens[Baz].b2.f1.s
+```
+--
+```
+val updatedBaz = bazF1s.set(baz)("Updated!")
+```
+---
+```
+import scalaz.NonEmptyList
+import scalaz.syntax.foldable1._
+
+type MediaTitle = String
+
+case class MediaCountry(
+  countryCode: String,
+  title: MediaTitle
+)
+
+case class Film(
+  countries: NonEmptyList[MediaCountry]
+)
+
+case class Show(
+  countries: NonEmptyList[MediaCountry]
+)
+```
+---
+Test Data
+
+```
+val film = Film(NonEmptyList(
+  MediaCountry("DE", "Der Marsianer"),
+  MediaCountry("JP", "マービン ザ マーシャン"),
+  MediaCountry("MX", "Misión Rescate"),
+  MediaCountry("US", "The Martian")
+))
+
+val show = Show(NonEmptyList(
+  MediaCountry("DE", "House of Cards"),
+  MediaCountry("JP", "ハウス・オブ・カード"),
+  MediaCountry("MX", "House of Cards"),
+  MediaCountry("US", "House of Cards")
+))
+```
+---
+Code
+```
+implicit val filmCountries = lens[Film].countries
+implicit val showCountries = lens[Show].countries
+
+val countryTitle = lens[MediaCountry].title
+def updateRegionalTitle[T](media: T
+    )(code: String, value: MediaTitle
+    )(implicit mediaCountries: Lens[T, NonEmptyList[MediaCountry]]
+    ): T = {
+
+  mediaCountries.modify(media)(_.foldMap1 {
+    case c if c.countryCode == code =>
+      NonEmptyList(countryTitle.set(c)(value))
+    case c => NonEmptyList(c)
+  })
+}
+```
+--
+
+```
+val updated = updateRegionalTitle(film)("JP", "オデッセイ")
+```
+---
+```
+import scalaz.NonEmptyList
+import scalaz.syntax.foldable1._
+
+type MediaTitle = String
+
+case class MediaCountry(
+  countryCode: String,
+  title: MediaTitle
+)
+
+case class Film(
+  countries: NonEmptyList[MediaCountry]
+)
+
+case class Show(
+  countries: NonEmptyList[MediaCountry]
+)
+
+// Test Data
+
+val film = Film(NonEmptyList(
+  MediaCountry("DE", "Der Marsianer"),
+  MediaCountry("JP", "マービン ザ マーシャン"),
+  MediaCountry("MX", "Misión Rescate"),
+  MediaCountry("US", "The Martian")
+))
+
+val show = Show(NonEmptyList(
+  MediaCountry("DE", "House of Cards"),
+  MediaCountry("JP", "ハウス・オブ・カード"),
+  MediaCountry("MX", "House of Cards"),
+  MediaCountry("US", "House of Cards")
+))
+
+// Code
+
+object Attempt1 {
+  def updateRegionalTitle[T](media: T
+      )(code: String, value: MediaTitle
+      ): Any = {
+    media match {
+      case film: Film => film.copy(countries=film.countries.foldMap1 {
+        case c if c.countryCode == code => NonEmptyList(c.copy(title=value))
+        case c => NonEmptyList(c)
+      })
+      case show: Show => show.copy(countries=show.countries.foldMap1 {
+        case c if c.countryCode == code => NonEmptyList(c.copy(title=value))
+        case c => NonEmptyList(c)
+      })
+    }
+  }
+}
+
+object Attempt2 {
+  def updateRegionalTitle(media: Film
+      )(code: String, value: MediaTitle
+      ): Film = {
+    film.copy(countries=film.countries.foldMap1 {
+      case c if c.countryCode == code => NonEmptyList(c.copy(title=value))
+      case c => NonEmptyList(c)
+    })
+  }
+
+  def updateRegionalTitle(media: Show
+      )(code: String, value: MediaTitle
+      ): Show = {
+    show.copy(countries=show.countries.foldMap1 {
+      case c if c.countryCode == code => NonEmptyList(c.copy(title=value))
+      case c => NonEmptyList(c)
+    })
+  }
+}
+
+// Example
+
+val f1 = Attempt1.updateRegionalTitle(film)("JP", "オデッセイ")
+val s1 = Attempt1.updateRegionalTitle(show)("JP", "オデッセイ")
+
+val f2 = Attempt2.updateRegionalTitle(film)("JP", "オデッセイ")
+val s2 = Attempt2.updateRegionalTitle(show)("JP", "オデッセイ")
+```
+---

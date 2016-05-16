@@ -1,0 +1,56 @@
+
+Starter challenge:
+--
+What does this do?
+
+```
+Option(javaFunc(1, 2L, "Foo"))
+  .flatMap(validateThing)
+```
+--
+
+* You have to know the types:
+# Instead of just knowing a single function type,
+# now I have to know the type of the whole chain
+
+  javaFunc: (Int, Long, String) => Option[T]
+  validateThing: T => Option[U]
+--
+
+* Option[T] proliferation
+# Sometimes a value is just nullable! We can handle this via catching the NPE exception
+
+  def doWork(user: Option[User], action: Option[Action]): Option[Result]
+--
+
+  def doWork(user: User, action: Action): Result
+---
+
+Easier:
+
+```
+val user = getUser(12345L)
+var result: String = null
+if (user != null) {
+    result = validateEmail(user.email)
+}
+
+if (result == null)
+  throw new Exception("Something went wrong!")
+```
+# Since user.email can be null, it's validateEmail's responsibility to handle it
+---
+
+Why?
+--
+
+* Clearer
+# You know where the result is going to end up: value.
+--
+
+* No Option[T] \*anywhere\s
+# Defensive programming keeps the mind sharp
+--
+
+* Toll-free interop with existing Java code!
+---
