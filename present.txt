@@ -1,0 +1,5 @@
+:load REPLesent.scala
+import scala.sys.process._
+val replesent = REPLesent(intp=$intp, slideCounter=true, slideTotal=true)
+import replesent._
+f
