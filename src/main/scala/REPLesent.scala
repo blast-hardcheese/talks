@@ -411,7 +411,8 @@ case class REPLesent(
         }
 
         Seq[(String, Regex)](
-          ("c", """\b(?:null)\b""".r)
+          ("r", "(?:\"(?:\\\"|[^\"])*\")".r)
+        , ("c", """\b(?:null)\b""".r)
         , ("m", """\b(?:true|false|this)\b""".r)
         , ("g", """\b(?:(?<=:\s{0,10})[$_]*[A-Z][_$A-Z0-9]*[\w$]*)\b""".r)
         , ("*", """\b(?:[$_]*[A-Z][_$A-Z0-9]*[\w$]*)\b""".r)
@@ -431,7 +432,7 @@ case class REPLesent(
       def apply(line: String): (Line, Option[String]) = {
         val l = Line("< " + (line /: regex) { case (line, (color, regex)) =>
           regex.replaceAllIn(line, { m =>
-            s"\\\\${color}${m}\\\\s"
+            s"\\\\${color}${Regex.quoteReplacement(m.toString)}\\\\s"
           })
         })
 
