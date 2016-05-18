@@ -1,7 +1,7 @@
 .PHONY: slides watch-slides
 
 slides:
-	grep -vh '^#' slides/* > REPLesent.txt
+	grep -vh '^#' slides/*.replesent > REPLesent.txt
 
 watch-slides:
 	while true; do \
