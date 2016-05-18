@@ -1,12 +1,12 @@
-
 Starter challenge:
+# First, what does the following do?
 --
-What does this do?
-
 ```
 Option(javaFunc(1, 2L, "Foo"))
   .flatMap(validateThing)
 ```
+# Option will catch the null from
+# javaFunc, but why is this a problem?
 --
 
 * You have to know the types:
