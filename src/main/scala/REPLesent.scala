@@ -23,6 +23,7 @@ case class REPLesent(
 , intp: scala.tools.nsc.interpreter.IMain = null
 ) {
   import scala.util.Try
+  import scala.util.matching.Regex
 
   private case class Config(
     top: String = "*"
@@ -377,8 +378,12 @@ case class REPLesent(
     Try {
       val input = io.Source.fromFile(file).getLines
       parse(input)
+    } recover { case e =>
+      e.printStackTrace
+      Console.err.print(s"Sorry, could not parse file $file. Quick, say something funny before anyone notices!", e)
+      IndexedSeq.empty
     } getOrElse {
-      Console.err.print(s"Sorry, could not parse file $file. Quick, say something funny before anyone notices!")
+      Console.err.print("Failed a second time, somehow")
       IndexedSeq.empty
     }
   }
