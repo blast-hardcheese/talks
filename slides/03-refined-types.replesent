@@ -1,6 +1,9 @@
-
-Type Tagging
-
+:ballot_box_with_check: Option
+:ballot_box: Refined types
+:ballot_box:
+:ballot_box:
+:ballot_box:
+---
 ```
 trait Tagger[T] {
   sealed trait Internal
