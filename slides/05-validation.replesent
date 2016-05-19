@@ -141,9 +141,98 @@ val validUser = createUser(123L, "neo", "tanderson@metacortex.com",
 val invalidUser = createUser(123L, "foo", "bar@example.com",
     -100, "Somebody", "")
 ```
+---
+# Surely, we can improve on this.
+--
+```
+case class User2(id: Long, username: String, email: String,
+    age: Int, firstName: String, lastName: String)
+```
+# No need for refined types
+---
+```
+val validateUsername: String => Either[String, String] = {
+  case "" => Left("Username must not be empty!")
+  case x if Set("foo", "bar", "baz").contains(x) => Left("${x} is not a valid username!")
+  case x if x.length > 16 => Left("Username is too long!")
+  case valid => Right(valid)
+}
+```
+# Either is part of the standard library
+--
+```
+val validateEmail: String => Either[String, String] = {
+  case "" => Left("Email must not be empty!")
+  case x if x.endsWith("@example.com") => Left("Please use a valid domain!")
+  case x if !EmailAddress.isValid(x) => Left("Invalid email!")
+  case valid => Right(valid)
+}
+```
+---
+```
+val validateAge: Int => Either[String, Int] = {
+  case x if x < 0 => Left("Invalid age!")
+  case valid => Right(valid)
+}
+
+val validateName: String => Either[String, String] = {
+  case "" => Left("Must not be empty!")
+  case x if x.length > 16 => Left("Maximum length of 16 characters")
+  case valid => Right(valid)
+}
+```
+---
+```
+def createUser2(id: Long, username: String, email: String,
+    age: Int, firstName: String, lastName: String
+    ): Either[List[String], User2] =
+
+
+
+
+
+
+
+
+```
+---
+```
+def createUser2(id: Long, username: String, email: String,
+    age: Int, firstName: String, lastName: String
+    ): Either[List[String], User2] = {
+
+  val _username = validateUsername(username)
+  val _email = validateEmail(email)
+  val _age = validateAge(age)
+  val _firstName = validateName(firstName)
+  val _lastName = validateName(lastName)
+
+  val errors: List[String] = List(
+    _username.left.toOption,
+    _email.left.toOption,
+    _age.left.toOption,
+    _firstName.left.toOption,
+    _lastName.left.toOption
+  ).flatten
+
+  if (errors.isEmpty) {
+    Right(User2(id, _username.right.get, _email.right.get,
+      _age.right.get, _firstName.right.get, _lastName.right.get))
+  } else {
+    Left(errors)
+  }
+}
+```
+---
+It works though!
+
+```
+val validUser2 = createUser2(123L, "neo", "tanderson@metacortex.com",
+    32, "Thomas", "Anderson")
+```
 --
 
 ```
-val invalidUser = createUser(123L, "foo", "bar@example.com")
-```
+val invalidUser2 = createUser2(123L, "foo", "bar@example.com",
+    -100, "Somebody", "")
 ---
