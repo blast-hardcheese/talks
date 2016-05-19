@@ -81,12 +81,12 @@ val validateEmail: RawEmail => ValidOrErrorStrings[Email] = {
 ```
 case class User(id: Long, username: Username, email: Email)
 
-def createUser[F[_]](id: Long, username: RawUsername, email: RawEmail
-    )(applicative: Applicative[F]): F[User] = {
-  val ValidUser = applicative.lift3(User)
+def createUser(id: Long, username: RawUsername, email: RawEmail
+    ): ValidOrErrorStrings[User] = {
+  val ValidUser = Applicative[ValidOrErrorStrings].lift3(User)
 
   ValidUser(
-    applicative.pure(id),
+    id.successNel,
     validateUsername(username),
     validateEmail(email)
   )
