@@ -75,10 +75,13 @@ Easily extended
 ```
 type PostId = Long
 case class Post(id: PostId, title: String, thumbnail: Image)
+--
+
 implicit object PresentablePost extends Presentable[Post] {
   def title(elem: Post) = elem.title
   def displayImage(elem: Post) = elem.thumbnail
 }
+--
 
 val post = Post(
   id=100L,
