@@ -79,23 +79,67 @@ val validateEmail: RawEmail => ValidOrErrorStrings[Email] = {
 ```
 ---
 ```
-case class User(id: Long, username: Username, email: Email)
+type RawAge = Int
+object Age extends Tagger[Int]
+type Age = Age.Type
 
-def createUser(id: Long, username: RawUsername, email: RawEmail
+val validateAge: RawAge => ValidOrErrorStrings[Age] = {
+  case x if x < 0 => "Invalid age!".failureNel
+  case valid => Age(valid).successNel
+}
+```
+---
+```
+type RawFirstName = String
+object FirstName extends Tagger[String]
+type FirstName = FirstName.Type
+
+type RawLastName = String
+object LastName extends Tagger[String]
+type LastName = LastName.Type
+
+def validateString[T](wrap: String => T
+    ): String => ValidOrErrorStrings[T] = {
+  case "" => "Must not be empty!".failureNel
+  case x if x.length > 16 => "Maximum length of 16 characters".failureNel
+  case valid => wrap(valid).successNel
+}
+
+val validateFirstName: RawFirstName => ValidOrErrorStrings[FirstName] =
+  validateString(FirstName(_))
+val validateLastName: RawLastName => ValidOrErrorStrings[LastName] =
+  validateString(LastName(_))
+```
+---
+```
+case class User(id: Long, username: Username, email: Email,
+    age: Age, firstName: FirstName, lastName: LastName)
+
+def createUser(id: Long, username: RawUsername, email: RawEmail,
+    age: RawAge, firstName: RawFirstName, lastName: RawLastName
     ): ValidOrErrorStrings[User] = {
-  val ValidUser = Applicative[ValidOrErrorStrings].lift3(User)
+  val ValidUser = Applicative[ValidOrErrorStrings].lift6(User)
 
   ValidUser(
     id.successNel,
     validateUsername(username),
-    validateEmail(email)
+    validateEmail(email),
+    validateAge(age),
+    validateFirstName(firstName),
+    validateLastName(lastName)
   )
 }
+```
+---
+```
+val validUser = createUser(123L, "neo", "tanderson@metacortex.com",
+    32, "Thomas", "Anderson")
 ```
 --
 
 ```
-val validUser = createUser(123L, "neo", "tanderson@metacortex.com")
+val invalidUser = createUser(123L, "foo", "bar@example.com",
+    -100, "Somebody", "")
 ```
 --
 
