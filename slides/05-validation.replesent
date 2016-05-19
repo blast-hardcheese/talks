@@ -1,7 +1,6 @@
 :ballot_box_with_check: Option
 :ballot_box_with_check: Refined types
 :ballot_box_with_check: "Type classes"
-:ballot_box_with_check: Lenses
 :ballot_box: Validation
 ---
 Applicative:
