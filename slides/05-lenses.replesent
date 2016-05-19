@@ -3,27 +3,28 @@
 :ballot_box_with_check: "Type classes"
 :ballot_box: Lenses
 :ballot_box:
---
+---
 ```
 import shapeless.{ lens, Lens }
 
-case class Foo(i: Int, s: String)
-case class Bar(f1: Foo, f2: Foo)
-case class Baz(b1: Bar, b2: Bar)
+case class Permissions(canPublish: Boolean, canDelete: Boolean)
+case class UserMeta(permissions: Permissions)
+case class User(id: Long, username: String, meta: UserMeta)
 
-val baz = Baz(
-  Bar(Foo(1, "First"), Foo(2, "Second")),
-  Bar(Foo(3, "Third"), Foo(4, "Fourth"))
-)
+val user = User(123L, "etivrusky",
+  UserMeta(Permissions(
+    canPublish=true,
+    canDelete=false
+  )))
 ```
 --
 
 ```
-val bazF1s = lens[Baz].b2.f1.s
+val userCanDelete = lens[User].meta.permissions.canDelete
 ```
 --
 ```
-val updatedBaz = bazF1s.set(baz)("Updated!")
+val updatedUser = userCanDelete.set(user)(true)
 ```
 ---
 ```
