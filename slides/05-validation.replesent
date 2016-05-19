@@ -15,32 +15,32 @@ Applicative:
   ...
 ---
 ```
-import scalaz.Applicative
+import scala.language.higherKinds
+import scalaz._, Scalaz._
 
 case class Simple[T](value: T)
 
-implicit object ApplicativeFoo extends Applicative[Simple] {
+implicit object ApplicativeSimple extends Applicative[Simple] {
   def point[A](a: => A): Simple[A] = Simple(a)
   def ap[A, B](fa: => Simple[A])(f: => Simple[A => B]): Simple[B] = Simple(f.value(fa.value))
 }
 
-case class Bar[T](accum: String, value: T)
+def compute[F[_]: Applicative]: F[Long] = {
+  def pure[T](value: T): F[T] = Applicative[F].pure(value)
+  def add(a: F[Long], b: F[Long]): F[Long] = (a |@| b) { _ + _ }
 
-implicit object ApplicativeBar extends Applicative[Bar] {
-  def point[A](a: => A): Bar[A] = Bar(a.toString, a)
-  def ap[A, B](fa: => Bar[A])(f: => Bar[A => B]): Bar[B] = Bar(
-    s"(${f.accum} ${fa.accum})",
-    f.value(fa.value))
+  add(pure(10L), pure(20L))
 }
 ```
 ---
-Validation:
-
 ```
-import scalaz.{ NonEmptyList, Validation }
-import scalaz.syntax.validation._
-
 type ValidOrErrorStrings[T] = Validation[NonEmptyList[String], T]
+
+compute[ValidOrErrorStrings] |+| 20L.successNel
+```
+--
+```
+compute[ValidOrErrorStrings] |+| "An error occurred!".failureNel
 ```
 ---
 ```
