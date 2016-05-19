@@ -17,20 +17,20 @@ Applicative:
 ```
 import scalaz.Applicative
 
-case class Foo[T](x: T)
+case class Simple[T](value: T)
 
-implicit object ApplicativeFoo extends Applicative[Foo] {
-  def point[A](a: => A): Foo[A] = Foo(a)
-  def ap[A, B](fa: => Foo[A])(f: => Foo[A => B]): Foo[B] = Foo(f.x(fa.x))
+implicit object ApplicativeFoo extends Applicative[Simple] {
+  def point[A](a: => A): Simple[A] = Simple(a)
+  def ap[A, B](fa: => Simple[A])(f: => Simple[A => B]): Simple[B] = Simple(f.value(fa.value))
 }
 
-case class Bar[T](accum: String, x: T)
+case class Bar[T](accum: String, value: T)
 
 implicit object ApplicativeBar extends Applicative[Bar] {
   def point[A](a: => A): Bar[A] = Bar(a.toString, a)
   def ap[A, B](fa: => Bar[A])(f: => Bar[A => B]): Bar[B] = Bar(
     s"(${f.accum} ${fa.accum})",
-    f.x(fa.x))
+    f.value(fa.value))
 }
 ```
 ---
