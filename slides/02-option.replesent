@@ -1,6 +1,7 @@
 Starter challenge:
 # First, what does the following do?
 --
+
 ```
 Option(javaFunc(1, 2L, "Foo"))
   .flatMap(validateThing)
@@ -25,7 +26,6 @@ Option(javaFunc(1, 2L, "Foo"))
 
   def doWork(user: User, action: Action): Result
 ---
-
 Easier:
 
 ```
@@ -40,7 +40,6 @@ if (result == null)
 ```
 # Since user.email can be null, it's validateEmail's responsibility to handle it
 ---
-
 Why?
 --
 

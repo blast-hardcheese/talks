@@ -70,7 +70,6 @@ val userTitle = Presentable.title(user)
 val userImage = Presentable.displayImage(user)
 ```
 ---
-
 Easily extended
 
 ```
