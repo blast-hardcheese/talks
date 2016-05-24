@@ -2,4 +2,28 @@ import replesent._
 import scala.sys.process._
 val replesent = REPLesent(intp=$intp, slideCounter=true, slideTotal=true)
 import replesent._
+
+def genLift(i: Int): String = {
+  val types: String = (1 to i).map(x => s"A${x}").mkString(", ")
+  val ftypes: String = (1 to i).map(x => s"F[A${x}]").mkString(", ")
+  val fargs: String = (1 to i).map(x => s"fa${x}").mkString(", ")
+  val calls: String = (1 to i).foldLeft("wrap(f.curried)") { case (a, x) => s"call(fa${x})(${a})" }
+
+  s"""
+  |implicit class Lift6Context[F[_]](context: Context[F]) {
+  |  import context.{ wrap, call }
+  |
+  |  def lift${i}[${types}, Result](f: ($types) => Result): (${ftypes}) => F[Result] = {
+  |    case (${fargs}) =>
+  |      ${calls}
+  |  }
+  |}""".stripMargin
+}
+
+def buildLift(i: Int): Unit = {
+  val s = genLift(i)
+  println(s)
+  intp.interpret(s)
+}
+
 f
