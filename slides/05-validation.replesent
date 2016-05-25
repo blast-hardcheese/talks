@@ -22,7 +22,7 @@ def fail[T](err: String): ValidOrErrorStrings[T] = Failure(List(err))
 ---
 
 ```
-trait Context[F[_]] {
+trait Applicative[F[_]] {
   def wrap[A](value: A): F[A]
   def call[A, B](fa: => F[A])(ff: F[A => B]): F[B]
 
@@ -39,7 +39,7 @@ buildLift(6)
 ```
 ---
 ```
-implicit object ValidationContext extends Context[ValidOrErrorStrings] {
+implicit object ValidationContext extends Applicative[ValidOrErrorStrings] {
   def wrap[A](value: A) = Success(value)
   def call[A, B](fa: => ValidOrErrorStrings[A])(ff: ValidOrErrorStrings[A => B]): ValidOrErrorStrings[B] = {
     (fa, ff) match {
@@ -54,7 +54,7 @@ implicit object ValidationContext extends Context[ValidOrErrorStrings] {
 --
 ```
 
-def addTwo[F[_]](value: F[Int])(implicit ctx: Context[F]) = {
+def addTwo[F[_]](value: F[Int])(implicit ctx: Applicative[F]) = {
   ctx.call(value)(ctx.wrap((_: Int) + 2))
 }
 --
