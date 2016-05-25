@@ -3,40 +3,41 @@
 :ballot_box_with_check: "Type classes"
 :ballot_box: Validation
 ---
-Applicative:
-  point: A => F[A]
-  ap: F[A] => F[A => B] => F[B]
---
-  lift:  ( A      => B) =>  F[A]              => F[B]
---
-  lift2: ((A,B)   => C) => (F[A], F[B])       => F[C]
---
-  lift3: ((A,B,C) => D) => (F[A], F[B], F[C]) => F[D]
-  ...
----
 ```
-import scala.language.higherKinds
-import scalaz._, Scalaz._
+sealed trait Validation[+Err, +A]
+case class Success[A](value: A) extends Validation[Nothing, A]
+case class Failure[E](value: E) extends Validation[E, Nothing]
+--
 
-case class Simple[T](value: T)
+type ValidOrErrorStrings[+A] = Validation[List[String], A]
+def success[T](x: T): ValidOrErrorStrings[T] = Success(x)
+def fail[T](err: String): ValidOrErrorStrings[T] = Failure(List(err))
+--
 
-implicit object ApplicativeSimple extends Applicative[Simple] {
-  def point[A](a: => A): Simple[A] = Simple(a)
-  def ap[A, B](fa: => Simple[A])(f: => Simple[A => B]): Simple[B] = Simple(f.value(fa.value))
-}
+trait Context[F[_]] {
+  def wrap[A](value: A): F[A]
+  def call[A, B](fa: => F[A])(ff: F[A => B]): F[B]
 
-def compute[F[_]: Applicative]: F[Long] = {
-  def pure[T](value: T): F[T] = Applicative[F].pure(value)
-  def add(a: F[Long], b: F[Long]): F[Long] = (a |@| b) { _ + _ }
+  def lift[A, Result](f: A => Result): F[A] => F[Result] = {
+    case fa =>
 
-  add(pure(10L), pure(20L))
+    call(fa)(wrap(f))
+  }
 }
 ```
 ---
 ```
-type ValidOrErrorStrings[T] = Validation[NonEmptyList[String], T]
-
-compute[ValidOrErrorStrings] |+| 20L.successNel
+implicit object ValidationContext extends Context[ValidOrErrorStrings] {
+  def wrap[A](value: A) = Success(value)
+  def call[A, B](fa: => ValidOrErrorStrings[A])(ff: ValidOrErrorStrings[A => B]): ValidOrErrorStrings[B] = {
+    (fa, ff) match {
+      case (Success(a), Success(f)) => Success(f(a))
+      case (Failure(a), Failure(f)) => Failure(f ++ a)
+      case (Failure(a), _) => Failure(a)
+      case (_, Failure(f)) => Failure(f)
+    }
+  }
+}
 ```
 --
 ```
