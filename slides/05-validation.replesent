@@ -27,6 +27,10 @@ trait Context[F[_]] {
 ```
 ---
 ```
+buildLift(6)
+```
+---
+```
 implicit object ValidationContext extends Context[ValidOrErrorStrings] {
   def wrap[A](value: A) = Success(value)
   def call[A, B](fa: => ValidOrErrorStrings[A])(ff: ValidOrErrorStrings[A => B]): ValidOrErrorStrings[B] = {
@@ -128,7 +132,7 @@ case class User(id: Long, username: Username, email: Email,
 def createUser(id: Long, username: RawUsername, email: RawEmail,
     age: RawAge, firstName: RawFirstName, lastName: RawLastName
     ): ValidOrErrorStrings[User] = {
-  val ValidUser = Applicative[ValidOrErrorStrings].lift6(User)
+  val ValidUser = ValidationContext.lift6(User)
 
   ValidUser(
     success(id),
