@@ -59,14 +59,14 @@ object Username extends Tagger[String]
 type Username = Username.Type
 
 val validateUsername: RawUsername => ValidOrErrorStrings[Username] = {
-  case "" => "Username must not be empty!".failureNel
+  case "" => fail("Username must not be empty!")
 
   case x if Set("foo", "bar", "baz").contains(x) =>
-    s"${x} is not a valid username!".failureNel
+    fail(s"${x} is not a valid username!")
 
-  case x if x.length > 16 => "Username is too long!".failureNel
+  case x if x.length > 16 => fail("Username is too long!")
 
-  case valid => Username(valid).successNel
+  case valid => success(Username(valid))
 }
 ```
 ---
@@ -77,14 +77,14 @@ object Email extends Tagger[String]
 type Email = Email.Type
 
 val validateEmail: RawEmail => ValidOrErrorStrings[Email] = {
-  case "" => "Email must not be empty!".failureNel
+  case "" => fail("Email must not be empty!")
 
   case x if x.endsWith("@example.com") =>
-    "Please use a valid domain!".failureNel
+    fail("Please use a valid domain!")
 
-  case x if !EmailAddress.isValid(x) => "Invalid email!".failureNel
+  case x if !EmailAddress.isValid(x) => fail("Invalid email!")
 
-  case valid => Email(valid).successNel
+  case valid => success(Email(valid))
 }
 ```
 ---
@@ -94,8 +94,8 @@ object Age extends Tagger[Int]
 type Age = Age.Type
 
 val validateAge: RawAge => ValidOrErrorStrings[Age] = {
-  case x if x < 0 => "Invalid age!".failureNel
-  case valid => Age(valid).successNel
+  case x if x < 0 => fail("Invalid age!")
+  case valid => success(Age(valid))
 }
 ```
 ---
@@ -110,9 +110,9 @@ type LastName = LastName.Type
 
 def validateString[T](wrap: String => T
     ): String => ValidOrErrorStrings[T] = {
-  case "" => "Must not be empty!".failureNel
-  case x if x.length > 16 => "Maximum length of 16 characters".failureNel
-  case valid => wrap(valid).successNel
+  case "" => fail("Must not be empty!")
+  case x if x.length > 16 => fail("Maximum length of 16 characters")
+  case valid => success(wrap(valid))
 }
 
 val validateFirstName: RawFirstName => ValidOrErrorStrings[FirstName] =
@@ -131,7 +131,7 @@ def createUser(id: Long, username: RawUsername, email: RawEmail,
   val ValidUser = Applicative[ValidOrErrorStrings].lift6(User)
 
   ValidUser(
-    id.successNel,
+    success(id),
     validateUsername(username),
     validateEmail(email),
     validateAge(age),
