@@ -7,13 +7,21 @@
 sealed trait Validation[+Err, +A]
 case class Success[A](value: A) extends Validation[Nothing, A]
 case class Failure[E](value: E) extends Validation[E, Nothing]
+```
 --
 
+```
 type ValidOrErrorStrings[+A] = Validation[List[String], A]
+```
+--
+
+```
 def success[T](x: T): ValidOrErrorStrings[T] = Success(x)
 def fail[T](err: String): ValidOrErrorStrings[T] = Failure(List(err))
---
+```
+---
 
+```
 trait Context[F[_]] {
   def wrap[A](value: A): F[A]
   def call[A, B](fa: => F[A])(ff: F[A => B]): F[B]
