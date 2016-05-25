@@ -41,7 +41,16 @@ implicit object ValidationContext extends Context[ValidOrErrorStrings] {
 ```
 --
 ```
-compute[ValidOrErrorStrings] |+| "An error occurred!".failureNel
+
+def addTwo[F[_]](value: F[Int])(implicit ctx: Context[F]) = {
+  ctx.call(value)(ctx.wrap((_: Int) + 2))
+}
+--
+
+addTwo(success(2))
+--
+
+addTwo(fail[Int]("Something terrible happened!"))
 ```
 ---
 ```
