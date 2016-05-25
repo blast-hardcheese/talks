@@ -19,7 +19,13 @@ Functional Programming is Overrated
 >> Github:   blast-hardcheese 
 >> Email:    blast@hardchee.se
 ---
-What to expect
+What to expect:
 # Practical, everyday techniques to cut through
 # the noise and get the job done.
+--
+
+:ballot_box: Option
+:ballot_box: Refined types
+:ballot_box: "Type classes"
+:ballot_box: Validation
 ---

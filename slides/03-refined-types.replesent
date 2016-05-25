@@ -1,7 +1,7 @@
 :ballot_box_with_check: Option
 :ballot_box: Refined types
-:ballot_box:
-:ballot_box:
+:ballot_box: "Type classes"
+:ballot_box: Validation
 ---
 ```
 trait Tagger[T] {
