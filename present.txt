@@ -3,6 +3,18 @@ import scala.sys.process._
 val replesent = REPLesent(intp=$intp, slideCounter=true, slideTotal=true)
 import replesent._
 
+object OptionExample {
+  def javaFunc(x: Int, y: Long, z: String): String = null
+  def validateThing(s: String): Option[Int] = Some(s.length).filterNot(_ == 0)
+
+  case class User(email: String)
+
+  def getUser(id: Long): User = null
+  def validateEmail(email: String): String = null
+}
+
+import OptionExample._
+
 def genLift(i: Int): String = {
   val types: String = (1 to i).map(x => s"A${x}").mkString(", ")
   val ftypes: String = (1 to i).map(x => s"F[A${x}]").mkString(", ")
