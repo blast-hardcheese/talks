@@ -1,7 +1,18 @@
 Functional Programming is Overrated
 ===================================
 
-A tongue-in-cheek exercise in refactoring a functionally designed, generally decoupled REST service (built with akka-http and doobie) into a tightly coupled, less typesafe REST service with unconstrained effects.
+Functional programming is almost revered in some circles for its power to make code simple, composable, and comprehensible. However, these benefits have a darker side that's not as well understood or appreciated:
+
+_**Functional programming constrains code in ways that are heavy-handed and overbearing.**_
+
+In this talk, the speaker will be exploring practical imperative techniques to free your codebase from the shackles of Functional Programming.
+
+Recommended reading:
+
+ * I Am Null (And So Can You!)
+ * Real World Primitive Types
+ * Any => Unit for Dummies
+ * 7 Exceptions of Highly Effective People
 
 Talking points:
 
