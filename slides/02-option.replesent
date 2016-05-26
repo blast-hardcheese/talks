@@ -3,8 +3,8 @@ Starter challenge:
 --
 
 ```
-Option(javaFunc(1, 2L, "Foo"))
-  .flatMap(validateThing)
+Option(javaFunc(1, 2L, "Foo")
+  ).flatMap(validateThing)
 ```
 # Option will catch the null from
 # javaFunc, but why is this a problem?

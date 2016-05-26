@@ -52,16 +52,20 @@ implicit object ValidationContext extends Applicative[ValidOrErrorStrings] {
 }
 ```
 --
-```
 
+```
 def addTwo[F[_]](value: F[Int])(implicit ctx: Applicative[F]) = {
   ctx.call(value)(ctx.wrap((_: Int) + 2))
 }
+```
 --
 
+```
 addTwo(success(2))
+```
 --
 
+```
 addTwo(fail[Int]("Something terrible happened!"))
 ```
 ---
@@ -207,15 +211,7 @@ val validateName: String => Either[String, String] = {
 ```
 def createUser2(id: Long, username: String, email: String,
     age: Int, firstName: String, lastName: String
-    ): Either[List[String], User2] =
-
-
-
-
-
-
-
-
+    ): Either[List[String], User2] = ???
 ```
 ---
 ```
@@ -257,4 +253,5 @@ val validUser2 = createUser2(123L, "neo", "tanderson@metacortex.com",
 ```
 val invalidUser2 = createUser2(123L, "foo", "bar@example.com",
     -100, "Somebody", "")
+```
 ---

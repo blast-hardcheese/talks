@@ -6,20 +6,20 @@
 Definitions
 
 ```
-    type AnnouncementId = Long
-    type UserId = Long
-    type Username = String
+type AnnouncementId = Long
+type UserId = Long
+type Username = String
 
-    case class Image(url: String)
+case class Image(url: String)
 
-    case class Announcement(id: AnnouncementId,
-                            title: String,
-                            thumbnail: Image,
-                            text: String)
+case class Announcement(id: AnnouncementId,
+                        title: String,
+                        thumbnail: Image,
+                        text: String)
 
-    case class User(id: UserId,
-                    username: Username,
-                    profileImage: Image)
+case class User(id: UserId,
+                username: Username,
+                profileImage: Image)
 ```
 ---
 Behavior:
@@ -74,14 +74,18 @@ Easily extended
 ```
 type PostId = Long
 case class Post(id: PostId, title: String, thumbnail: Image)
+```
 --
 
+```
 implicit object PresentablePost extends Presentable[Post] {
   def title(elem: Post) = elem.title
   def displayImage(elem: Post) = elem.thumbnail
 }
+```
 --
 
+```
 val post = Post(
   id=100L,
   title="Hello, world!",
