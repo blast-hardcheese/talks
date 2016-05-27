@@ -5,6 +5,12 @@ import replesent._
 
 import Presentation._
 
+def buildLift(i: Int): Unit = {
+  val s = genLift(i)
+  println(s)
+  intp.interpret(s)
+}
+
 def revert: Unit = $intp.interpret("import Presentation._")
 
 f
