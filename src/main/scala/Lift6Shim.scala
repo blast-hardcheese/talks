@@ -1,5 +1,4 @@
-trait ApplicativeExt { self: Predef =>
-
+trait ApplicativeExt { self: PredefDefs =>
 	implicit class Lift6Applicative[F[_]](context: Applicative[F]) {
 		import context.{ wrap, call }
 

@@ -8,10 +8,10 @@ slides:
 predef:
 	echo '' > src/main/scala/Predef.scala
 	echo 'import ReplDefinitions._' >> src/main/scala/Predef.scala
-	echo 'trait Predef { self: ApplicativeExt =>' >> src/main/scala/Predef.scala
+	echo 'trait PredefDefs { self: ApplicativeExt =>' >> src/main/scala/Predef.scala
 	grep -vh '^#' slides/*.replesent | sed -n -e '/^```/,/^```/ p' | sed 's/^```$$//' >> src/main/scala/Predef.scala
 	echo '}' >> src/main/scala/Predef.scala
-	echo 'object Predef extends Predef with ApplicativeExt' >> src/main/scala/Predef.scala
+	echo 'object Predef extends PredefDefs with ApplicativeExt' >> src/main/scala/Predef.scala
 
 watch-slides:
 	while true; do \
