@@ -11,9 +11,9 @@
   def javaFunc(x: Int, y: Long, z: String): String = null
   def validateThing(s: String): Option[Int] = Some(s.length).filterNot(_ == 0)
 
-  case class User(email: String)
+  case class JUser(email: String)
 
-  def getUser(id: Long): User = null
+  def getUser(id: Long): JUser = null
   def validateSomeEmail(email: String): String = null
 
   def genLift(i: Int): String = {
