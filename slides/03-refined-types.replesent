@@ -12,17 +12,17 @@ trait Tagger[T] {
   def unapply(value: Type): Option[T] = Some(value)
 }
 
-object UserId extends Tagger[Long]
-type UserId = UserId.Type
+object AssetId extends Tagger[Long]
+type AssetId = AssetId.Type
 ```
 --
 
 ```
 // Pack
-val id = UserId(12345L)
+val id = AssetId(12345L)
 
 // Unpack
-val UserId(_id) = id
+val AssetId(_id) = id
 ```
 ---
 What? Why? It's still just a Long, right?
@@ -68,17 +68,17 @@ Descriptive types for \*everything\s?
 Easier:
 
 ```
-val fn: String = "Thomas"
-val ln: String = "Anderson"
+val fn2: String = "Thomas"
+val ln2: String = "Anderson"
 
 def formatName(first: String, last: String): String = {
   s"${first} ${last}"
 }
 
-formatName(fn, ln)
+formatName(fn2, ln2)
 
 // Works! Bonus!
-formatName(ln, fn)
+formatName(ln2, fn2)
 ```
 ---
 Why?
