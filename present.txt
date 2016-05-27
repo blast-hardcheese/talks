@@ -3,9 +3,8 @@ import scala.sys.process._
 val replesent = REPLesent(intp=$intp, slideCounter=true, slideTotal=true)
 import replesent._
 
-import ReplDefinitions._
-import Predef._
+import Presentation._
 
-def revert: Unit = $intp.interpret("import Predef._")
+def revert: Unit = $intp.interpret("import Presentation._")
 
 f

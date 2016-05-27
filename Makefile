@@ -5,13 +5,13 @@ default: slides predef
 slides:
 	grep -vh '^#' slides/*.replesent | grep -vh '^//-.*$$' | sed 's~^//+~~' > REPLesent.txt
 
+target = src/main/scala/Presentation.scala
+
 predef:
-	echo '' > src/main/scala/Predef.scala
-	echo 'import ReplDefinitions._' >> src/main/scala/Predef.scala
-	echo 'trait PredefDefs { self: ApplicativeExt =>' >> src/main/scala/Predef.scala
-	grep -vh '^#' slides/*.replesent | sed -n -e '/^```/,/^```/ p' | sed 's/^```$$//' >> src/main/scala/Predef.scala
-	echo '}' >> src/main/scala/Predef.scala
-	echo 'object Predef extends PredefDefs with ApplicativeExt' >> src/main/scala/Predef.scala
+	echo '' > "$(target)"
+	cat "$(target).head" > "$(target)"
+	grep -vh '^#' slides/*.replesent | sed -n -e '/^```/,/^```/ p' | sed 's/^```$$//' >> "$(target)"
+	cat "$(target).tail" >> "$(target)"
 
 watch-slides:
 	while true; do \
