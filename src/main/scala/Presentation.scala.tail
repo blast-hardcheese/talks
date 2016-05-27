@@ -36,6 +36,5 @@
   def buildLift(i: Int): Unit = {
     val s = genLift(i)
     println(s)
-    intp.interpret(s)
   }
 }
