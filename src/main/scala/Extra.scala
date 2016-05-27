@@ -9,7 +9,7 @@ object ReplDefinitions {
   case class User(email: String)
 
   def getUser(id: Long): User = null
-  def validateEmail(email: String): String = null
+  def validateSomeEmail(email: String): String = null
 
   def genLift(i: Int): String = {
     val types: String = (1 to i).map(x => s"A${x}").mkString(", ")

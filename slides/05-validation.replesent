@@ -70,9 +70,10 @@ addTwo(fail[Int]("Something terrible happened!"))
 ```
 ---
 ```
-type RawUsername = String
 object Username extends Tagger[String]
 type Username = Username.Type
+
+type RawUsername = String
 
 val validateUsername: RawUsername => ValidOrErrorStrings[Username] = {
   case "" => fail("Username must not be empty!")
@@ -116,13 +117,14 @@ val validateAge: RawAge => ValidOrErrorStrings[Age] = {
 ```
 ---
 ```
+//-Defined in previous slides
 type RawFirstName = String
-object FirstName extends Tagger[String]
-type FirstName = FirstName.Type
+//+object FirstName extends Tagger[String]
+//+type FirstName = FirstName.Type
 
 type RawLastName = String
-object LastName extends Tagger[String]
-type LastName = LastName.Type
+//+object LastName extends Tagger[String]
+//+type LastName = LastName.Type
 
 def validateString[T](wrap: String => T
     ): String => ValidOrErrorStrings[T] = {
@@ -177,7 +179,7 @@ case class User2(id: Long, username: String, email: String,
 # No need for refined types
 ---
 ```
-val validateUsername: String => Either[String, String] = {
+val validateUsername2: String => Either[String, String] = {
   case "" => Left("Username must not be empty!")
   case x if Set("foo", "bar", "baz").contains(x) => Left("${x} is not a valid username!")
   case x if x.length > 16 => Left("Username is too long!")
@@ -187,7 +189,7 @@ val validateUsername: String => Either[String, String] = {
 # Either is part of the standard library
 --
 ```
-val validateEmail: String => Either[String, String] = {
+val validateEmail2: String => Either[String, String] = {
   case "" => Left("Email must not be empty!")
   case x if x.endsWith("@example.com") => Left("Please use a valid domain!")
   case x if !EmailAddress.isValid(x) => Left("Invalid email!")
@@ -196,7 +198,7 @@ val validateEmail: String => Either[String, String] = {
 ```
 ---
 ```
-val validateAge: Int => Either[String, Int] = {
+val validateAge2: Int => Either[String, Int] = {
   case x if x < 0 => Left("Invalid age!")
   case valid => Right(valid)
 }
@@ -209,7 +211,7 @@ val validateName: String => Either[String, String] = {
 ```
 ---
 ```
-def createUser2(id: Long, username: String, email: String,
+def createUser_(id: Long, username: String, email: String,
     age: Int, firstName: String, lastName: String
     ): Either[List[String], User2] = ???
 ```
@@ -219,9 +221,9 @@ def createUser2(id: Long, username: String, email: String,
     age: Int, firstName: String, lastName: String
     ): Either[List[String], User2] = {
 
-  val _username = validateUsername(username)
-  val _email = validateEmail(email)
-  val _age = validateAge(age)
+  val _username = validateUsername2(username)
+  val _email = validateEmail2(email)
+  val _age = validateAge2(age)
   val _firstName = validateName(firstName)
   val _lastName = validateName(lastName)
 

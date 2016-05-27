@@ -32,13 +32,13 @@ Easier:
 val someUser = getUser(12345L)
 var result: String = null
 if (someUser != null) {
-    result = validateEmail(someUser.email)
+    result = validateSomeEmail(someUser.email)
 }
 
 if (result == null)
   throw new Exception("Something went wrong!")
 ```
-# Since someUser.email can be null, it's validateEmail's responsibility to handle it
+# Since someUser.email can be null, it's validateSomeEmail's responsibility to handle it
 ---
 Why?
 --

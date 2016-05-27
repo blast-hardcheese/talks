@@ -8,7 +8,7 @@ Definitions
 ```
 type AnnouncementId = Long
 type UserId = Long
-type Username = String
+type Name = String
 
 case class Image(url: String)
 
@@ -17,8 +17,8 @@ case class Announcement(id: AnnouncementId,
                         thumbnail: Image,
                         text: String)
 
-case class User(id: UserId,
-                username: Username,
+case class Account(id: UserId,
+                name: Name,
                 profileImage: Image)
 ```
 ---
@@ -51,18 +51,18 @@ implicit object PresentableAnnouncement extends Presentable[Announcement] {
   def displayImage(elem: Announcement) = elem.thumbnail
 }
 
-implicit object PresentableUser extends Presentable[User] {
-  def title(elem: User) = elem.username
-  def displayImage(elem: User) = elem.profileImage
+implicit object PresentableUser extends Presentable[Account] {
+  def title(elem: Account) = elem.name
+  def displayImage(elem: Account) = elem.profileImage
 }
 ```
 ---
 What do we get?
 
 ```
-val user = User(
+val user = Account(
   id=500L,
-  username="testuser",
+  name="testuser",
   profileImage=Image("http://example.com/500/profile.png"))
 
 val userTitle = Presentable.title(user)
@@ -101,12 +101,12 @@ Easier:
 object Presentable2 {
   def title(elem: Any): String = elem match {
     case elem: Announcement => elem.title
-    case elem: User => elem.username
+    case elem: Account => elem.name
   }
 
   def displayImage(elem: Any): Image = elem match {
     case elem: Announcement => elem.thumbnail
-    case elem: User => elem.profileImage
+    case elem: Account => elem.profileImage
   }
 }
 ```
