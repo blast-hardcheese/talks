@@ -1,5 +1,7 @@
 .PHONY: slides watch-slides
 
+default: slides predef
+
 slides:
 	grep -vh '^#' slides/*.replesent | grep -vh '^//-.*$$' | sed 's~^//+~~' > REPLesent.txt
 
