@@ -4,5 +4,8 @@ val replesent = REPLesent(intp=$intp, slideCounter=true, slideTotal=true)
 import replesent._
 
 import ReplDefinitions._
+import Predef._
+
+def revert: Unit = $intp.interpret("import Predef._")
 
 f
