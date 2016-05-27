@@ -22,7 +22,7 @@ def genLift(i: Int): String = {
   val calls: String = (1 to i).foldLeft("wrap(f.curried)") { case (a, x) => s"call(fa${x})(${a})" }
 
   s"""
-  |implicit class Lift6Context[F[_]](context: Context[F]) {
+  |implicit class Lift6Applicative[F[_]](context: Applicative[F]) {
   |  import context.{ wrap, call }
   |
   |  def lift${i}[${types}, Result](f: ($types) => Result): (${ftypes}) => F[Result] = {
