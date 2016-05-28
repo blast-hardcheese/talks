@@ -9,7 +9,7 @@
     }
 
   def javaFunc(x: Int, y: Long, z: String): String = null
-  def validateThing(s: String): Option[Int] = Some(s.length).filterNot(_ == 0)
+  def getLength(s: String): Int = s.length
 
   case class JUser(email: String)
 

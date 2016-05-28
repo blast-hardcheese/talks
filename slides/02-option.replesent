@@ -4,7 +4,7 @@ Starter challenge:
 
 ```
 Option(javaFunc(1, 2L, "Foo"))
-  .flatMap(validateThing)
+  .map(getLength)
 ```
 # Option will catch the null from
 # javaFunc, but why is this a problem?
@@ -14,8 +14,9 @@ Option(javaFunc(1, 2L, "Foo"))
 # Instead of just knowing a single function type,
 # now I have to know the type of the whole chain
 
-  javaFunc: (Int, Long, String) => Option[T]
-  validateThing: T => Option[U]
+  javaFunc: (Int, Long, String) => Option[String]
+  getLength: String => Int
+  result: Option[Int]
 --
 
 * Option[T] proliferation

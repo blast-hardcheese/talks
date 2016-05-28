@@ -1,7 +1,7 @@
 object Presentation {
 
 Option(javaFunc(1, 2L, "Foo"))
-  .flatMap(validateThing)
+  .map(getLength)
 
 
 val someUser = getUser(12345L)
@@ -410,7 +410,7 @@ val invalidUser2 = createUser2(123L, "foo", "bar@example.com",
     }
 
   def javaFunc(x: Int, y: Long, z: String): String = null
-  def validateThing(s: String): Option[Int] = Some(s.length).filterNot(_ == 0)
+  def getLength(s: String): Int = s.length
 
   case class JUser(email: String)
 
