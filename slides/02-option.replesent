@@ -17,15 +17,6 @@ Option(javaFunc(1, 2L, "Foo"))
   javaFunc: (Int, Long, String) => Option[String]
   getLength: String => Int
   result: Option[Int]
---
-
-* Option[T] proliferation
-# Sometimes a value is just nullable! We can handle this via catching the NPE exception
-
-  def doWork(user: Option[User], action: Option[Action]): Option[Result]
---
-
-  def doWork(user: User, action: Action): Result
 ---
 Easier:
 
