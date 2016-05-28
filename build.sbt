@@ -10,4 +10,4 @@ libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value
 
 libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.2.2"
 
-scalacOptions ++= Seq("-feature", "-language:higherKinds")
+scalacOptions ++= Seq("-feature", "-language:higherKinds", "-language:postfixOps")
