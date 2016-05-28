@@ -402,9 +402,11 @@ val validateName: String => Either[String, String] = {
 }
 
 
-def createUser_(id: Long, username: String, email: String,
+/*
+def createUser(id: Long, username: String, email: String,
     age: Int, firstName: String, lastName: String
-    ): Either[List[String], User2] = ???
+    ): Either[List[String], User2] =
+*/
 
 
 def createUser2(id: Long, username: String, email: String,
