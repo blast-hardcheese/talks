@@ -189,6 +189,8 @@ def fail[T](err: String): ValidOrErrorStrings[T] = Failure(List(err))
 
 
 trait Applicative[F[_]] {
+  type Ctx[T] = F[T]
+
   def wrap[A](value: A): F[A]
   def call[A, B](fa: => F[A])(ff: F[A => B]): F[B]
 
@@ -207,7 +209,7 @@ buildLift(6)
 
 implicit object ValidationContext extends Applicative[ValidOrErrorStrings] {
   def wrap[A](value: A) = Success(value)
-  def call[A, B](fa: => ValidOrErrorStrings[A])(ff: ValidOrErrorStrings[A => B]): ValidOrErrorStrings[B] = {
+  def call[A, B](fa: => Ctx[A])(ff: Ctx[A => B]): Ctx[B] = {
     (fa, ff) match {
       case (Success(a), Success(f)) => Success(f(a))
       case (Failure(a), Failure(f)) => Failure(f ++ a)
