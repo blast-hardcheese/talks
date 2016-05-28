@@ -124,7 +124,9 @@ lazy val postTitle2 = Presentable2.title(post)
 # Nothing's perfect, the users will understand
 --
 ```
+//!/*
 println(postTitle2)
+//!*/
 ```
 ---
 Why?

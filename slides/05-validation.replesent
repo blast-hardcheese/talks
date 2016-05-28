@@ -35,7 +35,9 @@ trait Applicative[F[_]] {
 ```
 ---
 ```
+//!/*
 buildLift(6)
+//!*/
 ```
 ---
 ```
@@ -61,12 +63,16 @@ def addTwo[F[_]](value: F[Int])(implicit ctx: Applicative[F]) = {
 --
 
 ```
+//!/*
 addTwo(success(2))
+//!*/
 ```
 --
 
 ```
+//!/*
 addTwo(fail[Int]("Something terrible happened!"))
+//!*/
 ```
 ---
 ```

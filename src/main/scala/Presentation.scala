@@ -10,8 +10,10 @@ if (someUser != null) {
     result = validateSomeEmail(someUser.email)
 }
 
+/*
 if (result == null)
   throw new Exception("Something went wrong!")
+*/
 
 
 trait Tagger[T] {
@@ -169,7 +171,9 @@ val userImage2 = Presentable2.displayImage(user)
 lazy val postTitle2 = Presentable2.title(post)
 
 
+/*
 println(postTitle2)
+*/
 
 
 sealed trait Validation[+Err, +A]
@@ -196,7 +200,9 @@ trait Applicative[F[_]] {
 }
 
 
+/*
 buildLift(6)
+*/
 
 
 implicit object ValidationContext extends Applicative[ValidOrErrorStrings] {
@@ -217,10 +223,14 @@ def addTwo[F[_]](value: F[Int])(implicit ctx: Applicative[F]) = {
 }
 
 
+/*
 addTwo(success(2))
+*/
 
 
+/*
 addTwo(fail[Int]("Something terrible happened!"))
+*/
 
 
 object Username extends Tagger[String]
