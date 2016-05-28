@@ -17,4 +17,9 @@ def buildLift(i: Int): Unit = {
   intp.interpret(s)
 }
 
+def end: Unit = {
+  pres.last
+  pres.previous
+}
+
 f
