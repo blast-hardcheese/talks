@@ -1,7 +1,7 @@
 object Presentation {
 
-Option(javaFunc(1, 2L, "Foo")
-  ).flatMap(validateThing)
+Option(javaFunc(1, 2L, "Foo"))
+  .flatMap(validateThing)
 
 
 val someUser = getUser(12345L)
