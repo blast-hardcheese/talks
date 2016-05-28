@@ -1,6 +1,6 @@
 import replesent._
-val replesent = REPLesent(intp=$intp, slideCounter=true, slideTotal=true)
-import replesent._
+val pres = REPLesent(intp=$intp, slideCounter=true, slideTotal=true)
+import pres._
 
 def revert: Unit = $intp.interpret("import Presentation._")
 
