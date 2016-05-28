@@ -20,3 +20,16 @@ Talking points:
  - Primitive type tagging (Inspired by [shapeless](https://github.com/milessabin/shapeless/blob/shapeless-2.3.1/core/src/main/scala/shapeless/typeoperators.scala#L25-L34), [scalaz](https://github.com/scalaz/scalaz/blob/v7.2.2/core/src/main/scala/scalaz/package.scala#L99-L110), further reading: [refined](https://github.com/fthomas/refined), [bond](https://github.com/fwbrasil/bond))
  - Typeclasses
  - Validation (from [Scalaz](https://github.com/scalaz/scalaz/blob/v7.2.2/core/src/main/scala/scalaz/Validation.scala))
+
+Following along:
+
+```
+computer user$ sbt console
+[info] Loading global plugins from /home/user/.sbt/0.13/plugins
+...
+scala> :load present.txt
+```
+
+Making changes:
+
+After editing anything in `slides/`, re-run `make` to rebuild `Presentation.scala`

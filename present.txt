@@ -1,3 +1,5 @@
+:power
+
 import replesent._
 val pres = REPLesent(intp=intp, slideCounter=true, slideTotal=true)
 import pres._
