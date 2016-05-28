@@ -20,6 +20,7 @@ def buildLift(i: Int): Unit = {
 def end: Unit = {
   pres.last
   pres.previous
+  pres.previous
 }
 
 f
