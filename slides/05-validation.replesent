@@ -267,3 +267,23 @@ val invalidUser2 = createUser2(123L, "foo", "bar@example.com",
     -100, "Somebody", "")
 ```
 ---
+In summary
+---
+Option:
+  + Prevents NullPointerExceptions
+  - Breaks with tradition
+
+Type refinement:
+  + Describes meaning, not just shape
+  - More stringent API, can't just pass whatever
+
+Type classes:
+  + Powerful extensibility
+  - One giant method == Single Point of Truth
+
+Validation:
+  + Compositional error handling
+  - Tracing through validation if/else chains add billable hours
+---
+Thank you
+---

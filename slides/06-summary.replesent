@@ -11,9 +11,5 @@ Type refinement:
 Type classes:
   + Powerful extensibility
   - One giant method == Single Point of Truth
-
-Validation:
-  + Compositional error handling
-  - Tracing through validation if/else chains add billable hours
 ---
 Thank you
