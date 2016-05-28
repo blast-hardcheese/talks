@@ -4,13 +4,13 @@ Option(javaFunc(1, 2L, "Foo"))
   .map(getLength)
 
 
+/*
 val someUser = getUser(12345L)
 var result: String = null
 if (someUser != null) {
     result = validateSomeEmail(someUser.email)
 }
 
-/*
 if (result == null)
   throw new Exception("Something went wrong!")
 */
@@ -59,7 +59,9 @@ val formatName: (FirstName, LastName) => FormattedName = {
 formatName(fn, ln)
 
 
+/*
 formatName(ln, fn)
+*/
 
 
 val fn2: String = "Thomas"
