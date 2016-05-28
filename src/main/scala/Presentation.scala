@@ -31,6 +31,7 @@ type AssetId = AssetId.Type
 // Pack
 val id = AssetId(12345L)
 
+
 // Unpack
 val AssetId(_id) = id
 
