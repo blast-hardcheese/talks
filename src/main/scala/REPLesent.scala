@@ -414,7 +414,7 @@ case class REPLesent(
           ("r", "(?:s?\"(?:\\\\\"|[^\"])*\")".r)
         , ("c", """\b(?:null)\b""".r)
         , ("m", """\b(?:true|false|this)\b""".r)
-        , ("g", """\b(?:(?<=:\s{0,10})[$_]*[A-Z][_$A-Z0-9]*[\w$]*)\b""".r)
+        , ("g", """\b(?:(?<=(?::|=>)\s{0,10})[$_]*[A-Z][_$A-Z0-9]*[\w$]*)\b""".r)
         , ("c", ("""\b(?:contains|exists|filter|filterNot|find|flatMap|flatten|fold|""" +
                  """forall|foreach|getOrElse|map|orElse)\b"""
           ).r)
