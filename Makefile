@@ -13,6 +13,13 @@ predef:
 	grep -vh '^#' slides/*.replesent | sed -n -e '/^```/,/^```/ p' | sed 's/^```$$//' | sed 's~^//!~~' >> "$(target)"
 	cat "$(target).tail" >> "$(target)"
 
+watch:
+	while true; do \
+		ls slides/* | entr -d \
+			make; \
+		sleep 1; \
+	done;
+
 watch-slides:
 	while true; do \
 		ls slides/* | entr -d \
