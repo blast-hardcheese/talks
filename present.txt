@@ -1,16 +1,15 @@
 import replesent._
-import scala.sys.process._
 val replesent = REPLesent(intp=$intp, slideCounter=true, slideTotal=true)
 import replesent._
 
-import Presentation._
+def revert: Unit = $intp.interpret("import Presentation._")
+
+revert
 
 def buildLift(i: Int): Unit = {
   val s = genLift(i)
   println(s)
   intp.interpret(s)
 }
-
-def revert: Unit = $intp.interpret("import Presentation._")
 
 f
