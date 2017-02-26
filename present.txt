@@ -6,4 +6,10 @@ val pres = REPLesent(intp=intp, slideCounter=true, slideTotal=true, source="slid
 import pres._
 :silent
 
+import scala.collection.immutable.Seq
+import scala.meta.{XtensionQuasiquoteTerm => Quasiquote, _}
+
+implicit val as = akka.actor.ActorSystem()
+implicit val mat = akka.stream.ActorMaterializer()
+
 f
