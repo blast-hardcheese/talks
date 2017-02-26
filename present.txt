@@ -1,0 +1,9 @@
+:power
+
+:silent
+import replesent._
+val pres = REPLesent(intp=intp, slideCounter=true, slideTotal=true, source="slides")
+import pres._
+:silent
+
+f
