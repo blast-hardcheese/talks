@@ -1,0 +1,47 @@
+object Presentation {
+  val specStringExtra = """
+      put:
+        operationId: updateUser
+        parameters:
+          -
+            in: query
+            name: id
+            type: number
+          -
+            in: body
+            name: user
+            schema:
+              $ref: '#/definitions/User'
+        responses:
+          200:
+            schema:
+              $ref: '#/definitions/User'
+
+    /user:
+      post:
+        operationId: createUser
+        parameters:
+          in: body
+          name: user
+          schema:
+            $ref: '#/definitions/User'
+        responses:
+          200:
+            schema:
+              $ref: '#/definitions/User'
+  definitions:
+    User:
+      type: object
+      required:
+        - name
+        - age
+      properties:
+        id:
+          type: number
+          format: int64
+        name:
+          type: string
+        age:
+          type: number
+          format: int32
+  """

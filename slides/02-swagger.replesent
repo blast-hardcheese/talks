@@ -1,0 +1,434 @@
+---
+```
+import _root_.io.swagger.parser._
+
+val specString = """
+swagger: 2.0
+host: localhost
+schemes:
+  - http
+
+paths:
+  /user/{id}:
+    get:
+      operationId: getUser
+      produces:
+      - application/json
+      parameters:
+        in: query
+        name: id
+        type: number
+        format: int64
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/User'
+"""
+
+val swagger = new SwaggerParser().parse(specString ++ specStringExtra)
+```
+---
+```
+import scala.collection.JavaConverters._
+
+val scheme = swagger.getSchemes.asScala.head.name.toLowerCase
+// scheme: String = http
+val host = swagger.getHost
+// host: String = localhost
+```
+
+--
+```
+val (pathTpl, pathSpec) = swagger.getPaths.asScala.toList.head
+// pathTpl: String = /user/{id}
+// pathSpec: io.swagger.models.Path =
+//   io.swagger.models.Path@7acc05cf
+```
+
+--
+```
+val operationSpec = pathSpec.getOperations.asScala.toList.head
+// operationSpec: io.swagger.models.Operation =
+//   io.swagger.models.Operation@e709de8e[null]
+```
+---
+```
+val operationId = operationSpec.getOperationId
+// operationId: String = getUser
+```
+
+--
+```
+val (statusCode, responseSpec) =
+  operationSpec.getResponses.asScala.toList.head
+// statusCode: String = 200
+// responseSpec: io.swagger.models.Response =
+//   io.swagger.models.Response@f36aca24
+```
+
+--
+```
+import _root_.io.swagger.models.properties.RefProperty
+val responseType = responseSpec.getSchema.asInstanceOf[RefProperty]
+// responseType: io.swagger.models.properties.RefProperty =
+//   io.swagger.models.properties.RefProperty@6522085c
+```
+
+--
+```
+val responseClassName = responseType.getSimpleRef
+// responseClassName: String = User
+```
+
+---
+```noexec
+import akka.http.scaladsl.Http
+import akka.http.scaladsl.model.HttpRequest
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
+import _root_.io.circe.{Decoder, Error, jawn}
+
+// operationId: String = getUser, responseClassName: String = User
+def getUser(id: Long)(
+  implicit as: ActorSystem, mat: ActorMaterializer, dec: Decoder[User],
+    timeout: scala.concurrent.duration.Duration
+  ): scala.concurrent.Future[Either[Error, User]] = {
+  // scheme: String = http, host: String = localhost
+  // pathTpl: String = /user/{id}
+  val uri =
+    "http" + "://" + "localhost" + "/user/{id}".replace("{id}", id.toString)
+  Http().singleRequest(HttpRequest(uri = uri))
+    .flatMap(_.entity.toStrict(timeout).map(jawn.decode[User](_)))
+}
+```noexec
+---
+First appearance of scala.meta!
+
+```
+import scala.collection.immutable.Seq
+// Renaming here to work around a bug in the slides. Not needed normally.
+import scala.meta.{XtensionQuasiquoteTerm => Quasiquote, _}
+```
+--
+
+Store the imports for later...
+
+```
+val imports: Seq[Stat] = source"""
+import akka.http.scaladsl.Http
+import akka.http.scaladsl.model.HttpRequest
+import akka.stream.ActorMaterializer
+import _root_.io.circe.{Decoder, Error, jawn}
+
+import scala.concurrent.Future
+import scala.concurrent.duration.Duration
+""".stats
+```
+---
+Paste desired code directly into quasiquotes!
+
+```
+val goal = q"""
+  def getUser(id: Long)(implicit as: ActorSystem, mat: ActorMaterializer,
+      dec: Decoder[User], timeout: Duration
+    ): Future[Either[Error, User]] = {
+
+    val uri = ( "http" + "://" + "localhost" +
+      "/user/{id}".replace("{id}", id.toString)
+
+
+
+    )
+
+    Http().singleRequest(HttpRequest(uri = uri))
+      .flatMap(_.entity.toStrict(timeout).map(jawn.decode[User](_)))
+  }
+  """
+```
+---
+Extracting dynamic components
+
+```
+val q"""
+  def getUser(id: Long)(implicit as: ActorSystem, mat: ActorMaterializer,
+      dec: Decoder[User], timeout: Duration
+    ): Future[Either[Error, User]] = {
+
+    val uri = ( "http" + "://" + "localhost" +
+      "/user/{id}".replace("{id}", id.toString)
+
+
+
+    )
+
+    Http().singleRequest(HttpRequest(uri = uri))
+      .flatMap(_.entity.toStrict(timeout).map(jawn.decode[User](_)))
+  }
+  """ = goal
+```
+---
+Start replacing terms...
+
+```noexec
+def buildMethod(???): Defn.Def =
+
+  q"""
+  def getUser(id: Long)(implicit as: ActorSystem, mat: ActorMaterializer,
+      dec: Decoder[User], timeout: Duration
+    ): Future[Either[Error, User]] = {
+
+    val uri = ( "http" + "://" + "localhost" +
+      "/user/{id}".replace("{id}", id.toString)
+
+
+
+    )
+
+    Http().singleRequest(HttpRequest(uri = uri))
+      .flatMap(_.entity.toStrict(timeout).map(jawn.decode[User](_)))
+  }
+  """
+```noexec
+---
+Start replacing terms...
+
+```noexec
+def buildMethod(scheme: Lit, ???): Defn.Def =
+
+  q"""
+  def getUser(id: Long)(implicit as: ActorSystem, mat: ActorMaterializer,
+      dec: Decoder[User], timeout: Duration
+    ): Future[Either[Error, User]] = {
+
+    val uri = ( $scheme + "://" + "localhost" +
+      "/user/{id}".replace("{id}", id.toString)
+
+
+
+    )
+
+    Http().singleRequest(HttpRequest(uri = uri))
+      .flatMap(_.entity.toStrict(timeout).map(jawn.decode[User](_)))
+  }
+  """
+```noexec
+---
+Start replacing terms...
+
+```noexec
+def buildMethod(scheme: Lit, host: Lit, ???): Defn.Def =
+
+  q"""
+  def getUser(id: Long)(implicit as: ActorSystem, mat: ActorMaterializer,
+      dec: Decoder[User], timeout: Duration
+    ): Future[Either[Error, User]] = {
+
+    val uri = ( $scheme + "://" + $host +
+      "/user/{id}".replace("{id}", id.toString)
+
+
+
+    )
+
+    Http().singleRequest(HttpRequest(uri = uri))
+      .flatMap(_.entity.toStrict(timeout).map(jawn.decode[User](_)))
+  }
+  """
+```noexec
+---
+Start replacing terms...
+
+```noexec
+def buildMethod(scheme: Lit, host: Lit, pathTpl: Lit, ???): Defn.Def =
+
+  q"""
+  def getUser(id: Long)(implicit as: ActorSystem, mat: ActorMaterializer,
+      dec: Decoder[User], timeout: Duration
+    ): Future[Either[Error, User]] = {
+
+    val uri = ( $scheme + "://" + $host +
+      pathTpl.replace("{id}", id.toString)
+
+
+
+    )
+
+    Http().singleRequest(HttpRequest(uri = uri))
+      .flatMap(_.entity.toStrict(timeout).map(jawn.decode[User](_)))
+  }
+  """
+```noexec
+---
+Start replacing terms...
+
+```noexec
+def buildMethod(scheme: Lit, host: Lit, pathTpl: Lit, operationId: Term.Name,
+    ???): Defn.Def =
+  q"""
+  def $operationId(id: Long)(implicit as: ActorSystem, mat: ActorMaterializer,
+      dec: Decoder[User], timeout: Duration
+    ): Future[Either[Error, User]] = {
+
+    val uri = ( $scheme + "://" + $host +
+      pathTpl.replace("{id}", id.toString)
+
+
+
+    )
+
+    Http().singleRequest(HttpRequest(uri = uri))
+      .flatMap(_.entity.toStrict(timeout).map(jawn.decode[User](_)))
+  }
+  """
+```noexec
+---
+Start replacing terms...
+
+```noexec
+def buildMethod(scheme: Lit, host: Lit, pathTpl: Lit, operationId: Term.Name,
+    bodytpe: Type, ???): Defn.Def =
+  q"""
+  def $operationId(id: Long)(implicit as: ActorSystem, mat: ActorMaterializer,
+      dec: Decoder[$bodytpe], timeout: Duration
+    ): Future[Either[Error, $bodytpe]] = {
+
+    val uri = ( $scheme + "://" + $host +
+      pathTpl.replace("{id}", id.toString)
+
+
+
+    )
+
+    Http().singleRequest(HttpRequest(uri = uri))
+      .flatMap(_.entity.toStrict(timeout).map(jawn.decode[$bodytpe](_)))
+  }
+  """
+```noexec
+---
+Start replacing terms...
+
+```noexec
+def buildMethod(scheme: Lit, host: Lit, pathTpl: Lit, operationId: Term.Name,
+    bodytpe: Type, params: Seq[Term.Param]): Defn.Def =
+  q"""
+  def $operationId(..$params)(implicit as: ActorSystem, mat: ActorMaterializer,
+      dec: Decoder[$bodytpe], timeout: Duration
+    ): Future[Either[Error, $bodytpe]] = {
+
+    val uri = ( $scheme + "://" + $host +
+      pathTpl.replace(???)
+
+
+
+    )
+
+    Http().singleRequest(HttpRequest(uri = uri))
+      .flatMap(_.entity.toStrict(timeout).map(jawn.decode[$bodytpe](_)))
+  }
+  """
+```noexec
+---
+Start replacing terms...
+
+```noexec
+def buildMethod(scheme: Lit, host: Lit, pathTpl: Lit, operationId: Term.Name,
+    bodytpe: Type, params: Seq[Term.Param]): Defn.Def =
+  q"""
+  def $operationId(..$params)(implicit as: ActorSystem, mat: ActorMaterializer,
+      dec: Decoder[$bodytpe], timeout: Duration
+    ): Future[Either[Error, $bodytpe]] = {
+
+    val uri = ( $scheme + "://" + $host +
+      ${params.foldLeft[Term](pathTpl) { case (a, param) =>
+
+        ???
+
+    )
+
+    Http().singleRequest(HttpRequest(uri = uri))
+      .flatMap(_.entity.toStrict(timeout).map(jawn.decode[$bodytpe](_)))
+  }
+  """
+```noexec
+---
+Start replacing terms...
+
+```noexec
+def buildMethod(scheme: Lit, host: Lit, pathTpl: Lit, operationId: Term.Name,
+    bodytpe: Type, params: Seq[Term.Param]): Defn.Def =
+  q"""
+  def $operationId(..$params)(implicit as: ActorSystem, mat: ActorMaterializer,
+      dec: Decoder[$bodytpe], timeout: Duration
+    ): Future[Either[Error, $bodytpe]] = {
+
+    val uri = ( $scheme + "://" + $host +
+      ${params.foldLeft[Term](pathTpl) { case (a, param) =>
+        q"""$a.replace("{" +                          + "}",
+                                 ???                 )
+        """ }}
+    )
+
+    Http().singleRequest(HttpRequest(uri = uri))
+      .flatMap(_.entity.toStrict(timeout).map(jawn.decode[$bodytpe](_)))
+  }
+  """
+```noexec
+---
+Start replacing terms...
+
+```noexec
+def buildMethod(scheme: Lit, host: Lit, pathTpl: Lit, operationId: Term.Name,
+    bodytpe: Type, params: Seq[Term.Param]): Defn.Def =
+  q"""
+  def $operationId(..$params)(implicit as: ActorSystem, mat: ActorMaterializer,
+      dec: Decoder[$bodytpe], timeout: Duration
+    ): Future[Either[Error, $bodytpe]] = {
+
+    val uri = ( $scheme + "://" + $host +
+      ${params.foldLeft[Term](pathTpl) { case (a, param) =>
+        q"""$a.replace("{" + ${Lit(param.name.value)} + "}",
+                                 ???                 )
+        """ }}
+    )
+
+    Http().singleRequest(HttpRequest(uri = uri))
+      .flatMap(_.entity.toStrict(timeout).map(jawn.decode[$bodytpe](_)))
+  }
+  """
+```noexec
+---
+... and we now have a function that produces code!
+
+```
+def buildMethod(scheme: Lit, host: Lit, pathTpl: Lit, operationId: Term.Name,
+    bodytpe: Type, params: Seq[Term.Param]): Defn.Def =
+  q"""
+  def $operationId(..$params)(implicit as: ActorSystem, mat: ActorMaterializer,
+      dec: Decoder[$bodytpe], timeout: Duration
+    ): Future[Either[Error, $bodytpe]] = {
+
+    val uri = ( $scheme + "://" + $host +
+      ${params.foldLeft[Term](pathTpl) { case (a, param) =>
+        q"""$a.replace("{" + ${Lit(param.name.value)} + "}",
+                       ${Term.Name(param.name.value)})
+        """ }}
+    )
+
+    Http().singleRequest(HttpRequest(uri = uri))
+      .flatMap(_.entity.toStrict(timeout).map(jawn.decode[$bodytpe](_)))
+  }
+  """
+```
+---
+Now, if we call buildMethod...
+
+```
+buildMethod(
+  Lit(scheme),
+  Lit(host),
+  Lit(pathTpl),
+  Term.Name(operationId),
+  Type.Name(responseClassName),
+  Seq(param"id: Long")
+)
+```

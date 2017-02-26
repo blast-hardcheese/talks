@@ -1,0 +1,27 @@
+          Crash course on scala.meta
+
+https://github.com/blast-hardcheese/talks
+
+
+
+
+
+
+
+
+
+
+
+>> Devon Stewart              
+>> Twitter: @blast-hardchese  
+>> Github:   blast-hardcheese 
+>> Email:    blast@hardchee.se
+---
+What to expect:
+--
+
+:ballot_box: Why do we need metaprogramming? (5 min)
+:ballot_box: Use case: Code generation from Swagger specification
+:ballot_box: Hands-on with quasiquotes
+:ballot_box: Questions
+---
