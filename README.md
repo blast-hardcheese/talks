@@ -21,6 +21,7 @@ Lambda Calculus as a Basis for our Language
 ===========================================
 
 Starting off with the definition of HOAS from Phil Freeman's [hoas](https://github.com/paf31/haskell-slides/blob/master/hoas/HOAS.hs) talk, (based on the [Simply Typed Lambda Calculus](https://en.wikipedia.org/wiki/Simply_typed_lambda_calculus)):
+
 ```haskell
 > class HOAS f where
 >   infixr 0 $$
@@ -36,30 +37,35 @@ Building abstractions in the Simply Typed Lambda Calculus
 As Phil put it, this is the minimal useful implementation of the lambda calculus. We've got a fair amount of primitive expression:
 
 <h6 id="pure_identity">Identity</h6>
+
 ```haskell
 > hid :: HOAS f => f (a -> a)
 > hid = lam $ \x -> x
 ```
 
 <h6 id="pure_first-order-functions">First-order functions</h6>
+
 ```haskell
 > hid' :: HOAS f => f (a -> a)
 > hid' = hid $$ hid
 ```
 
 <h6 id="pure_application">Function application (Freeman)</h6>
+
 ```haskell
 > app :: HOAS f => f (a -> (a -> b) -> b)
 > app = lam $ \a -> lam $ \f -> f $$ a
 ```
 
 <h6 id="pure_value-manipulation">Value manipulation (Freeman)</h6>
+
 ```haskell
 > konst :: HOAS f => f (a -> b -> a)
 > konst = lam $ \a -> lam $ \_ -> a
 ```
 
 <h6 id="pure_composition">Function composition</h6>
+
 ```haskell
 > infixr 9 $.
 > ($.) :: HOAS f => f (b -> c) -> f (a -> b) -> f (a -> c)
@@ -67,12 +73,14 @@ As Phil put it, this is the minimal useful implementation of the lambda calculus
 ```
 
 <h6 id="pure_parameter_flip">Parameter flipping</h6>
+
 ```haskell
 > hflip :: HOAS f => f ((a -> b -> c) -> (b -> a -> c))
 > hflip = lam (\f -> lam (\x -> lam (\y -> (f $$ y) $$ x)))
 ```
 
 <h6 id="pure_church_numerals">Church Numerals</h6>
+
 ```haskell
 > hsucc :: HOAS f => f (((a -> a) -> a -> a) -> (a -> a) -> a -> a)
 > hsucc = lam (\next -> lam (\f -> lam (\x -> f $$ ((next $$ f) $$ x))))
@@ -90,6 +98,7 @@ As Phil put it, this is the minimal useful implementation of the lambda calculus
 ... all without providing an instance of `HOAS` or concrete types.
 
 To borrow (and slightly modify) Freeman's `PPrint` instance of `HOAS`:
+
 ```haskell
 > data PPrint a = PPrint { prettyPrint :: Int -> String }
 
@@ -229,6 +238,7 @@ Something worth mentioning is that all of our expressions are of the type `HOAS 
 
 Javascript
 ----------
+
 ```haskell
 > data PrettyJS a = PrettyJS { prettyJS :: Int -> String }
 
@@ -319,6 +329,7 @@ We can even generate well-typed Python:
 
 Python
 ------
+
 ```haskell
 > data PrettyPython a = PrettyPython { prettyPython :: Int -> String }
 
@@ -369,6 +380,7 @@ Adding `Int`
 ```
 
 <h6 id="pprint-int">`PPrint`</h6>
+
 ```haskell
 > instance HOASType PPrint Int where
 >   hpure x = PPrint (\_ -> show x)
@@ -379,6 +391,7 @@ Adding `Int`
 ```
 
 <h6 id="heval-int">`HEval`</h6>
+
 ```haskell
 > instance HOASType HEval Int where
 >   hpure x = HEval x
@@ -397,6 +410,7 @@ Adding `String`
 ```
 
 <h6 id="pprint-string">`PPrint`</h6>
+
 ```haskell
 > instance HOASType PPrint String where
 >   hpure x = PPrint (\_ -> show x)
@@ -406,6 +420,7 @@ Adding `String`
 ```
 
 <h6 id="heval-string">`HEval`</h6>
+
 ```haskell
 > instance HOASType HEval String where
 >   hpure = HEval
