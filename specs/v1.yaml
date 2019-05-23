@@ -1,0 +1,39 @@
+swagger: "2.0"
+host: localhost:1234
+paths:
+  /login:
+    get:
+      operationId: login
+      x-jvm-package: users
+      produces:
+        - application/json
+      parameters:
+      - name: username
+        in: formData
+        required: true
+        type: string
+      - name: password
+        in: formData
+        required: true
+        type: string
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/User'
+        401: {}
+definitions:
+  User:
+    type: object
+    required:
+      - id
+      - username
+      - password
+    properties:
+      id:
+        type: string
+      username:
+        type: string
+      password:
+        type: string
+      note:
+        type: string

@@ -32,3 +32,7 @@ scalacOptions ++= Seq(
   , "-target:jvm-1.8"         // Target platform for object files
   , "-unchecked"              // Enable additional warnings where generated code depends on assumptions
 )
+
+guardrailTasks in Compile := List(
+  ScalaServer(file("specs/v1.yaml"))
+)
