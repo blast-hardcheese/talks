@@ -1,0 +1,59 @@
+Available build tooling:
+- SBT 1.0+
+- Apache Maven
+- CLI runner available
+---
+Set-up for SBT:
+
+  project/plugins.sbt:
+    addSbtPlugin("com.twilio" % "sbt-guardrail" % "0.49.1")  // At the time of writing
+
+  build.sbt:
+    guardrailTasks in Compile := List(
+      ScalaClient(file("my-service.yaml"), pkg="se.hardchee.server"),
+      ScalaServer(file("my-service.yaml"), pkg="se.hardchee.server"),
+      // JavaClient
+      // JavaServer
+    )
+---
+Set-up for Maven:
+
+  pom.xml:
+    <build>
+      <plugins>
+        ...
+        <plugin>
+          <groupId>com.twilio</groupId>
+          <artifactId>guardrail-maven-plugin_2.12</artifactId>
+          <version>0.49.1</version> <!-- at the time of writing -->
+          <executions>
+            <execution>
+              <id>generate-my-service-client</id>
+              <goals>
+                <goal>generate-sources</goal>
+              </goals>
+              <configuration>
+                <language>scala</language>
+                <specPath>${project.basedir}/my-service.yaml</specPath>
+                <packageName>se.hardchee.server</packageName>
+                <kind>client</kind>
+              </configuration>
+            </execution>
+            <execution>
+              <id>generate-my-service-server</id>
+              <goals>
+                <goal>generate-sources</goal>
+              </goals>
+              <configuration>
+                <language>scala</language>
+                <specPath>${project.basedir}/my-service.yaml</specPath>
+                <packageName>se.hardchee.server</packageName>
+                <kind>server</kind>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        ...
+      </plugins>
+    </build>
+---

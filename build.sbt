@@ -8,6 +8,7 @@ val circeVersion      = "0.11.1"
 val scalatestVersion  = "3.0.7"
 
 libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value
+libraryDependencies += "org.scalameta" %% "scalameta" % "4.1.11"
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http"         % akkaVersion,
@@ -34,5 +35,7 @@ scalacOptions ++= Seq(
 )
 
 guardrailTasks in Compile := List(
-  ScalaServer(file("specs/v1.yaml"))
+  ScalaServer(file("specs/03-v1.yaml"), pkg="s03"),
+  ScalaServer(file("specs/04-v1.yaml"), pkg="s04"),
+  ScalaServer(file("specs/v1.yaml")),
 )

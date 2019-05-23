@@ -1,0 +1,61 @@
+Getting started
+---
+Getting started:
+
+    swagger: "2.0"
+    host: localhost:1234
+    paths:
+      /login:
+        get:
+          operationId: login
+          x-jvm-package: users
+          produces:
+            - application/json
+          parameters:
+          - name: username
+            in: formData
+            required: true
+            type: string
+          responses:
+            200: {}
+---
+```noexec
+trait UsersHandler {
+  def login(respond: UsersResource.loginResponse.type)(username: String): Future[UsersResource.loginResponse]
+}
+object UsersResource {
+  def routes(handler: UsersHandler)(implicit mat: akka.stream.Materializer): Route = {
+    post(path("login")((
+      formField(Symbol("username").as[String])
+    )( username =>
+      complete(handler.login(loginResponse)(username))
+    )))
+  }
+  sealed abstract class loginResponse(val statusCode: StatusCode)
+  case object loginResponseOK extends loginResponse(StatusCodes.OK)
+  ...
+}
+```
+---
+```silent
+import _root_.s03.users.{ UsersHandler, UsersResource }
+import scala.concurrent.Future
+```
+```
+val route = new UsersHandler {
+}
+```
+---
+```silent
+import _root_.s03.users.{ UsersHandler, UsersResource }
+import scala.concurrent.Future
+```
+```
+val handler = new UsersHandler {
+  override def login(respond: UsersResource.loginResponse.type
+    )(username: String
+    ) = Future.successful(respond.OK)
+}
+val routes = UsersResource.routes(handler)
+```
+---

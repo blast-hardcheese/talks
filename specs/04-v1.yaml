@@ -6,7 +6,7 @@ paths:
       operationId: login
       x-jvm-package: users
       consumes:
-        - multipart/form-data
+        - application/x-www-form-urlencoded
       produces:
         - application/json
       parameters:
@@ -19,23 +19,4 @@ paths:
         required: true
         type: string
       responses:
-        200:
-          schema:
-            $ref: '#/definitions/User'
-        401: {}
-definitions:
-  User:
-    type: object
-    required:
-      - id
-      - username
-      - password
-    properties:
-      id:
-        type: string
-      username:
-        type: string
-      password:
-        type: string
-      note:
-        type: string
+        200: {}

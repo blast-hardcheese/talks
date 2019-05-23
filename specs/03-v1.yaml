@@ -1,0 +1,18 @@
+swagger: "2.0"
+host: localhost:8080
+paths:
+  /login:
+    post:
+      operationId: login
+      x-jvm-package: users
+      consumes:
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+      parameters:
+      - name: username
+        in: formData
+        required: true
+        type: string
+      responses:
+        200: {}

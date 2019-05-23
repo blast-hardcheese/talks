@@ -1,1 +1,63 @@
-:anguished:
+      Principled HTTP Services with guardrail
+
+https://github.com/blast-hardcheese/talks
+
+
+
+
+
+
+
+
+
+
+
+>> Devon Stewart              
+>> Twitter: @blast-hardchese  
+>> Github:   blast-hardcheese 
+>> Email:    blast@hardchee.se
+---
+# Our industry faces some critical problems when it comes to writing software at scale:
+Problems writing software at scale:
+
+- How do we write HTTP APIs with confidence?
+- How do we communicate these APIs to others?
+- How do we communicate _change_ to others?
+---
+Existing technologies:
+
++------------------------------+----------------------------------------------------------------------------+
+| OpenAPI (formerly "Swagger") | Evolving standard to document HTTP APIs                                    |
+|                              | Comes with `swagger-codegen` (client and server generation)                |
+|                              | Libraries like `endpoints` permits describing APIs in a fluent API in code |
++------------------------------+----------------------------------------------------------------------------+
+| RAML                         | Nearly identical to OpenAPI in intent and featureset                       |
++------------------------------+----------------------------------------------------------------------------+
+| GRPC                         | Describes a non-HTTP data channel                                          |
++------------------------------+----------------------------------------------------------------------------+
+| GraphQL                      | Describes a flexible query protocol that can aggregate multiple datasets   |
++------------------------------+----------------------------------------------------------------------------+
+---
+Problems faced:
+
++------------------------------+------------------------------------------------------------------------------+
+| OpenAPI (formerly "Swagger") | - `swagger-codegen` can create syntactically incorrect code                  |
+|                              | - Annotations to reflect API from existing code has no guarantee of totality |
+|                              | - Describing APIs in code prevents non-developers from collaborating         |
+|                              | - Generate-once, maintain forever                                            |
++------------------------------+------------------------------------------------------------------------------+
+| RAML                         | - Small community, did not evaluate fully                                    |
++------------------------------+------------------------------------------------------------------------------+
+| GRPC                         | - Different protocol, not backwards compatible                               |
++------------------------------+------------------------------------------------------------------------------+
+| GraphQL                      | - Different protocol, not backwards compatible                               |
++------------------------------+------------------------------------------------------------------------------+
+---
+Presenting: guardrail
+
+- Start from a standard OpenAPI specification
+- Build tool integration, no stale code
+- Extraordinarily well tested
+- Generates human readable code
+- Generates code _you would write yourself_
+---

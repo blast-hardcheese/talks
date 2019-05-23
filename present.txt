@@ -1,3 +1,5 @@
+:power
+
 :silent
 import replesent._
 val pres = REPLesent(intp=intp, slideCounter=true, slideTotal=true, source="slides")
@@ -7,8 +9,38 @@ import pres._
 import scala.collection.immutable.Seq
 import scala.meta.{XtensionQuasiquoteTerm => Quasiquote, _}
 
-implicit val as = akka.actor.ActorSystem()
-implicit val mat = akka.stream.ActorMaterializer()
-as.terminate()
+import scala.concurrent.ExecutionContext.Implicits.global
+
+var actorSystem: Option[(akka.actor.ActorSystem, akka.stream.ActorMaterializer)] = None
+var binding: Option[akka.http.scaladsl.Http.ServerBinding] = None
+
+def getActorSystem(): (akka.actor.ActorSystem, akka.stream.ActorMaterializer) = {
+  actorSystem.getOrElse {
+    implicit val localActorSystem = akka.actor.ActorSystem()
+    val mat = akka.stream.ActorMaterializer()
+    actorSystem = Some((localActorSystem, mat))
+    (localActorSystem, mat)
+  }
+}
+
+implicit def localActorSystem: akka.actor.ActorSystem = getActorSystem()._1
+implicit def localMaterializer: akka.stream.ActorMaterializer = getActorSystem()._2
+
+def unbind(): Unit = {
+  import scala.concurrent._
+  import scala.concurrent.duration.Duration
+  binding.foreach { x =>
+    Await.result(x.unbind(), Duration.Inf)
+    binding = None
+  }
+}
+
+def bindAndServe(value: akka.http.scaladsl.server.Route): Unit = {
+  import scala.concurrent._
+  import scala.concurrent.duration._
+  unbind()
+  binding = Some(Await.result(akka.http.scaladsl.Http().bindAndHandle(value, "127.0.0.1", 8080), Duration.Inf))
+  println("Running at http://localhost:8080 !")
+}
 
 f
