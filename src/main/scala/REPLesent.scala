@@ -261,7 +261,7 @@ case class REPLesent(
 
       val content: String = emojiEscape.replaceAllIn(line, m => {
         m.group(1) match {
-          case e if emojis.contains(e) => drop += m.matched.length - 1; emojis(e)
+          case e if emojis.contains(e) => drop += m.matched.length - 2; emojis(e)
           case _ => m.matched
         }
       })
