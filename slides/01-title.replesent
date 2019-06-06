@@ -26,32 +26,32 @@ Problems writing software at scale:
 ---
 Existing technologies:
 
-+------------------------------+----------------------------------------------------------------------------+
-| OpenAPI (formerly "Swagger") | Evolving standard to document HTTP APIs                                    |
-|                              | Comes with `swagger-codegen` (client and server generation)                |
-|                              | Libraries like `endpoints` permits describing APIs in a fluent API in code |
-+------------------------------+----------------------------------------------------------------------------+
-| RAML                         | Nearly identical to OpenAPI in intent and featureset                       |
-+------------------------------+----------------------------------------------------------------------------+
-| GRPC                         | Describes a non-HTTP data channel                                          |
-+------------------------------+----------------------------------------------------------------------------+
-| GraphQL                      | Describes a flexible query protocol that can aggregate multiple datasets   |
-+------------------------------+----------------------------------------------------------------------------+
+ +------------------------------+----------------------------------------------------------------------------+
+ | OpenAPI (formerly "Swagger") | Evolving standard to document HTTP APIs                                    |
+ |                              | Comes with `swagger-codegen` (client and server generation)                |
+ |                              | Libraries like `endpoints` permits describing APIs in a fluent API in code |
+ +------------------------------+----------------------------------------------------------------------------+
+ | RAML                         | Nearly identical to OpenAPI in intent and featureset                       |
+ +------------------------------+----------------------------------------------------------------------------+
+ | GRPC                         | Describes a non-HTTP data channel                                          |
+ +------------------------------+----------------------------------------------------------------------------+
+ | GraphQL                      | Describes a flexible query protocol that can aggregate multiple datasets   |
+ +------------------------------+----------------------------------------------------------------------------+
 ---
 Problems faced:
 
-+------------------------------+------------------------------------------------------------------------------+
-| OpenAPI (formerly "Swagger") | - `swagger-codegen` can create syntactically incorrect code                  |
-|                              | - Annotations to reflect API from existing code has no guarantee of totality |
-|                              | - Describing APIs in code prevents non-developers from collaborating         |
-|                              | - Generate-once, maintain forever                                            |
-+------------------------------+------------------------------------------------------------------------------+
-| RAML                         | - Small community, did not evaluate fully                                    |
-+------------------------------+------------------------------------------------------------------------------+
-| GRPC                         | - Different protocol, not backwards compatible                               |
-+------------------------------+------------------------------------------------------------------------------+
-| GraphQL                      | - Different protocol, not backwards compatible                               |
-+------------------------------+------------------------------------------------------------------------------+
+ +------------------------------+------------------------------------------------------------------------------+
+ | OpenAPI (formerly "Swagger") | - `swagger-codegen` can create syntactically incorrect code                  |
+ |                              | - Annotations to reflect API from existing code has no guarantee of totality |
+ |                              | - Describing APIs in code prevents non-developers from collaborating         |
+ |                              | - Generate-once, maintain forever                                            |
+ +------------------------------+------------------------------------------------------------------------------+
+ | RAML                         | - Small community, did not evaluate fully                                    |
+ +------------------------------+------------------------------------------------------------------------------+
+ | GRPC                         | - Different protocol, not backwards compatible                               |
+ +------------------------------+------------------------------------------------------------------------------+
+ | GraphQL                      | - Different protocol, not backwards compatible                               |
+ +------------------------------+------------------------------------------------------------------------------+
 ---
 Presenting: guardrail
 
