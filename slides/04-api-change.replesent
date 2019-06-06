@@ -34,24 +34,6 @@ val handler = new UsersHandler {
 val routes = UsersResource.routes(handler)
 ```
 ---
-```noexec
-trait UsersHandler {
-  def login(respond: UsersResource.loginResponse.type)(username: String, password: String): Future[UsersResource.loginResponse]
-}
-object UsersResource {
-  def routes(handler: UsersHandler)(implicit mat: akka.stream.Materializer): Route = {
-    post(path("login")(
-      (formField(Symbol("username").as[String]) & formField(Symbol("password").as[String])
-    )( (username, password) =>
-      complete(handler.login(loginResponse)(username, password))
-    )))
-  }
-  sealed abstract class loginResponse(val statusCode: StatusCode)
-  case object loginResponseOK extends loginResponse(StatusCodes.OK)
-  ...
-}
-```
----
 ```silent
 import _root_.s04.users.{ UsersHandler, UsersResource }
 import scala.concurrent.Future
