@@ -33,7 +33,10 @@ object UsersResource {
   }
   sealed abstract class loginResponse(val statusCode: StatusCode)
   case object loginResponseOK extends loginResponse(StatusCodes.OK)
-  ...
+  object loginResponse {
+    def OK: loginResponse = loginResponseOK
+    ...
+  }
 }
 ```
 ---
