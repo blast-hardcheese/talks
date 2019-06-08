@@ -2,6 +2,8 @@
 
 This was an unconference workshop, building up intuitive knowledge of scalameta at the Scala REPL, finalizing with something generated that looks like a typeclass.
 
+The full REPL log can be found [here](repl.log)!
+
 ### Playing around building static methods on an object
 
 ```

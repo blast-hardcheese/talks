@@ -1,0 +1,741 @@
+Welcome to Scala 2.12.7 (OpenJDK 64-Bit Server VM, Java 1.8.0_121).
+Type in expressions for evaluation. Or try :help.
+
+scala>
+
+scala> import scala.meta._
+import scala.meta._
+
+scala> q"def foo = 5"
+res0: meta.Defn.Def = def foo = 5
+
+scala> res0.structure
+res1: String = Defn.Def(Nil, Term.Name("foo"), Nil, Nil, None, Lit.Int(5))
+
+scala> val q"def foo = 5" = res0
+
+scala> val "hello" = "hello"
+
+scala> val q"def ${fname} = 5" = res0
+fname: scala.meta.Term.Name = foo
+
+scala> q"def foo: List[Int] = 5"
+res2: meta.Defn.Def = def foo: List[Int] = 5
+
+scala> val q"def ${fname} = ${body}" = res0
+fname: scala.meta.Term.Name = foo
+body: scala.meta.Term = 5
+
+scala> res0.structure
+res3: String = Defn.Def(Nil, Term.Name("foo"), Nil, Nil, None, Lit.Int(5))
+
+scala> Defn.Def(Nil, Term.Name("foo"), Nil, Nil, None, Lit.Int(5))
+res4: scala.meta.Defn.Def = def foo = 5
+
+scala> Defn.Def(Nil, Term.Name("foo"), Nil, Nil, None, Term.Name("bar"))
+res5: scala.meta.Defn.Def = def foo = bar
+
+scala> q"private def foo = 5"
+res6: meta.Defn.Def = private def foo = 5
+
+scala> q"private def foo = 5".structure
+res7: String = Defn.Def(List(Mod.Private(Name(""))), Term.Name("foo"), Nil, Nil, None, Lit.Int(5))
+
+scala> q"private[example] def foo = 5".structure
+res8: String = Defn.Def(List(Mod.Private(Name("example"))), Term.Name("foo"), Nil, Nil, None, Lit.Int(5))
+
+scala> q"private def foo: Foo = 5".structure
+res9: String = Defn.Def(List(Mod.Private(Name(""))), Term.Name("foo"), Nil, Nil, Some(Type.Name("Foo")), Lit.Int(5))
+
+scala> q"private def ${Type.Name("Foo")}: Foo = 5".structure
+<console>:15: error: type mismatch when unquoting;
+ found   : scala.meta.Type.Name
+ required: scala.meta.Term.Name
+       q"private def ${Type.Name("Foo")}: Foo = 5".structure
+                     ^
+
+scala> q"def ${Term.Name("foo")} = 5"
+res11: meta.Defn.Def = def foo = 5
+
+scala> (1 until 10).toList.map { i => q"def ${Term.Name(s"foo${i")} = 5"
+     |
+     |
+You typed two blank lines.  Starting a new command.
+
+scala> (1 until 10).toList.map { i => q"def ${Term.Name(s"foo${i}")} = 5" }
+res12: List[meta.Defn.Def] = List(def foo1 = 5, def foo2 = 5, def foo3 = 5, def foo4 = 5, def foo5 = 5, def foo6 = 5, def foo7 = 5, def foo8 = 5, def foo9 = 5)
+
+scala> (1 until 10).toList.map { i => q"def ${Term.Name(s"foo${i}")} = 5" }.foreach(println)
+def foo1 = 5
+def foo2 = 5
+def foo3 = 5
+def foo4 = 5
+def foo5 = 5
+def foo6 = 5
+def foo7 = 5
+def foo8 = 5
+def foo9 = 5
+
+scala> q"def foo(a: Int) = 5"
+res14: meta.Defn.Def = def foo(a: Int) = 5
+
+scala> q"def foo(a: Int) = 5".structure
+res15: String = Defn.Def(Nil, Term.Name("foo"), Nil, List(List(Term.Param(Nil, Term.Name("a"), Some(Type.Name("Int")), None))), None, Lit.Int(5))
+
+scala> val q"def foo(..${params}) = 5" = res14
+params: List[scala.meta.Term.Param] = List(a: Int)
+
+scala> Defn.Def.unapply
+
+final def unapply(x: scala.meta.Defn.Def): Option[(List[scala.meta.Mod], scala.meta.Term.Name, List[meta.Type.Param], List[List[scala.meta.Term.Param]], Option[scala.meta.Type], scala.meta.Term)]
+
+scala> val q"def foo(..${params}) = 5" = res1
+<console>:16: error: type mismatch;
+ found   : String
+ required: scala.meta.Tree
+       val q"def foo(..${params}) = 5" = res1
+           ^
+
+scala> val q"def foo(..${params}) = 5" = res0
+scala.MatchError: def foo = 5 (of class scala.meta.Defn$Def$DefnDefImpl)
+  ... 36 elided
+
+scala> val Defn.Def(Nil, Term.Name("foo"), Nil, List(List(Term.Param(Nil, Term.Name("a"), Some(Ty
+pe.Name("Int")), None))), None, Lit.Int(5)) = Defn.Def(Nil, Term.Name("foo"), Nil, List(List(Term.Param(Nil, Term.Name("a"), Some(Type.Name("Int")), None))), None, Lit.Int(5))
+
+scala> val Defn.Def(Nil, fname, Nil, List(List(Term.Param(Nil, Term.Name("a"), Some(Type.Name("In
+t")), None))), None, Lit.Int(5)) = Defn.Def(Nil, Term.Name("foo"), Nil, List(List(Term.Param(Nil,
+ Term.Name("a"), Some(Type.Name("Int")), None))), None, Lit.Int(5))
+fname: scala.meta.Term.Name = foo
+
+scala> case class Foo(a: Int)
+defined class Foo
+
+scala> case class Bar(b: Foo, c: Int)
+defined class Bar
+
+scala> Bar(Foo(1), 2)
+res16: Bar = Bar(Foo(1),2)
+
+scala> val Bar(Foo(1), 2) = res16
+
+scala> val Bar(Foo(fst), snd) = res16
+fst: Int = 1
+snd: Int = 2
+
+scala> q"def foo(a: Int) = 5"
+res17: meta.Defn.Def = def foo(a: Int) = 5
+
+scala> val q"def foo(..${params}) = 5" = res17
+params: List[scala.meta.Term.Param] = List(a: Int)
+
+scala> q"def foo(..${params}) = 5"
+res18: meta.Defn.Def = def foo(a: Int) = 5
+
+scala> val q"def foo(...${params}) = 5" = res17
+params: List[List[scala.meta.Term.Param]] = List(List(a: Int))
+
+scala> params(0)(0)
+res19: scala.meta.Term.Param = a: Int
+
+scala> res19.structure
+res20: String = Term.Param(Nil, Term.Name("a"), Some(Type.Name("Int")), None)
+
+scala> (1 until 10).toList.map { i => Term.Param(Nil, Term.Name(s"a${i}"), Some(Type.Name("Int"))
+, None) }
+res21: List[scala.meta.Term.Param] = List(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int, a8: Int, a9: Int)
+
+scala> (1 until 10).toList.map { i => val params = (1 until 10).toList.map { j => Term.Param(Nil,
+ Term.Name(s"a${j}"), Some(Type.Name("Int")), None) }; q"def ${Term.Name(s"foo${i}")}(..${params}) = 5" } }.foreach(println)
+<console>:1: error: eof expected but '}' found.
+       (1 until 10).toList.map { i => val params = (1 until 10).toList.map { j => Term.Param(Nil, Term.Name(s"a${j}"), Some(Type.Name("Int")), None) }; q"def ${Term.Name(s"foo${i}")}(..${params}) = 5" } }.foreach(println)
+                                                                                                                                                                                                           ^
+
+scala> (1 until 10).toList.map { i => val params = (1 until 10).toList.map { j => Term.Param(Nil, Term.Name(s"a${j}"), Some(Type.Name("Int")), None); q"def ${Term.Name(s"foo${i}")}(..${params})
+= 5" } }.foreach(println)
+<console>:16: error: recursive value params needs type
+       (1 until 10).toList.map { i => val params = (1 until 10).toList.map { j => Term.Param(Nil, Term.Name(s"a${j}"), Some(Type.Name("Int")), None); q"def ${Term.Name(s"foo${i}")}(..${params}) = 5" } }.foreach(println)
+                                          ^
+
+scala>
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+(1 until 10).toList.map { i =>
+  val params: List[Term.Param] = (1 until i).toList.map { j =>
+    Term.Param(Nil, Term.Name(s"a${j}"), Some(Type.Name("Int")), None)
+  }
+  q"def ${Term.Name(s"foo${i}")}(..${params}) = 5"
+}.foreach(println)
+
+// Exiting paste mode, now interpreting.
+
+def foo1() = 5
+def foo2(a1: Int) = 5
+def foo3(a1: Int, a2: Int) = 5
+def foo4(a1: Int, a2: Int, a3: Int) = 5
+def foo5(a1: Int, a2: Int, a3: Int, a4: Int) = 5
+def foo6(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int) = 5
+def foo7(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int) = 5
+def foo8(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int) = 5
+def foo9(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int, a8: Int) = 5
+
+scala> :paste (1 until 10).toList.map { i =>
+usage: :paste [-raw] file | < EOF
+
+scala>   val params: List[Term.Param] = (1 until i).toList.map { j =>
+     |     Term.Param(Nil, Term.Name(s"a${j}"), Some(Type.Name("Int")), None)
+     |   }
+<console>:14: error: not found: value i
+         val params: List[Term.Param] = (1 until i).toList.map { j =>
+                                                 ^
+
+scala>   q"def ${Term.Name(s"foo${i}")}(..${params}) = 5"
+<console>:16: error: not found: value i
+         q"def ${Term.Name(s"foo${i}")}(..${params}) = 5"
+                                  ^
+
+scala> }
+<console>:1: error: eof expected but '}' found.
+       }
+       ^
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+(1 until 10).toList.map { i =>
+  val params: List[Term.Param] = (1 until i).toList.map { j =>
+    Term.Param(Nil, Term.Name(s"a${j}"), Some(Type.Name("Int")), None)
+  }
+  q"def ${Term.Name(s"foo${i}")}(..${params}) = 5"
+}
+
+// Exiting paste mode, now interpreting.
+
+res25: List[meta.Defn.Def] = List(def foo1() = 5, def foo2(a1: Int) = 5, def foo3(a1: Int, a2: Int) = 5, def foo4(a1: Int, a2: Int, a3: Int) = 5, def foo5(a1: Int, a2: Int, a3: Int, a4: Int) = 5, def foo6(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int) = 5, def foo7(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int) = 5, def foo8(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int) = 5, def foo9(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int, a8: Int) = 5)
+
+scala> q"object Foo { }"
+res26: meta.Defn.Object = object Foo
+
+scala> val q"object Foo { ..${defns} }" = res26
+defns: List[scala.meta.Stat] = List()
+
+scala> q"packagea com.example { object Foo { ..${defns} } } "
+<console>:16: error: ; expected but . found
+       q"packagea com.example { object Foo { ..${defns} } } "
+                     ^
+
+scala> q"package com.example { object Foo { ..${defns} } } "
+res28: scala.meta.Pkg =
+package com.example
+object Foo
+
+scala> param"foo"
+<console>:15: error: : expected but end of file found
+       param"foo"
+                ^
+
+scala> param"foo: int"
+res30: meta.Term.Param = foo: int
+
+scala> param"foo: Int"
+res31: meta.Term.Param = foo: Int
+
+scala> val q"object Foo { ..${defns} }" = res26
+defns: List[scala.meta.Stat] = List()
+
+scala> q"def foo = 5": Stat
+res32: scala.meta.Stat = def foo = 5
+
+scala> param"foo: Int": Stat
+<console>:15: error: type mismatch;
+ found   : meta.Term.Param
+ required: scala.meta.Stat
+       param"foo: Int": Stat
+       ^
+
+scala> q"object Foo { ..${defns} }"
+res34: meta.Defn.Object = object Foo
+
+scala> q"object Foo { ..${res25} }"
+res35: meta.Defn.Object =
+object Foo {
+  def foo1() = 5
+  def foo2(a1: Int) = 5
+  def foo3(a1: Int, a2: Int) = 5
+  def foo4(a1: Int, a2: Int, a3: Int) = 5
+  def foo5(a1: Int, a2: Int, a3: Int, a4: Int) = 5
+  def foo6(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int) = 5
+  def foo7(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int) = 5
+  def foo8(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int) = 5
+  def foo9(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int, a8: Int) = 5
+}
+
+scala> q"implicit def foo = 5".structure
+res36: String = Defn.Def(List(Mod.Implicit()), Term.Name("foo"), Nil, Nil, None, Lit.Int(5))
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+val params = (1 until 10).toList.map { i =>
+  val params: List[Term.Param] = (1 until i).toList.map { j =>
+    Term.Param(List(Mod.Implicit()), Term.Name(s"a${j}"), Some(Type.Name("Int")), None)
+  }
+  q"def ${Term.Name(s"foo${i}")}(..${params}) = 5"
+}
+
+q"object Foo { ..${params} }"
+
+// Exiting paste mode, now interpreting.
+
+params: List[meta.Defn.Def] = List(def foo1() = 5, def foo2(implicit a1: Int) = 5, def foo3(implicit a1: Int, a2: Int) = 5, def foo4(implicit a1: Int, a2: Int, a3: Int) = 5, def foo5(implicit a1: Int, a2: Int, a3: Int, a4: Int) = 5, def foo6(implicit a1: Int, a2: Int, a3: Int, a4: Int, a5: Int) = 5, def foo7(implicit a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int) = 5, def foo8(implicit a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int) = 5, def foo9(implicit a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int, a8: Int) = 5)
+res37: meta.Defn.Object =
+object Foo {
+  def foo1() = 5
+  def foo2(implicit a1: Int) = 5
+  def foo3(implicit a1: Int, a2: Int) = 5
+  def foo4(implicit a1: Int, a2: Int, a3: Int) = 5
+  de...
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+val params = (1 until 10).toList.map { i =>
+  val params: List[Term.Param] = (1 until i).toList.map { j =>
+    Term.Param(Nil, Term.Name(s"a${j}"), Some(Type.Name("Int")), None)
+  }
+  q"implicit def ${Term.Name(s"foo${i}")}(..${params}) = 5"
+}
+
+q"object Foo { ..${params} }"
+
+// Exiting paste mode, now interpreting.
+
+params: List[meta.Defn.Def] = List(implicit def foo1() = 5, implicit def foo2(a1: Int) = 5, implicit def foo3(a1: Int, a2: Int) = 5, implicit def foo4(a1: Int, a2: Int, a3: Int) = 5, implicit def foo5(a1: Int, a2: Int, a3: Int, a4: Int) = 5, implicit def foo6(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int) = 5, implicit def foo7(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int) = 5, implicit def foo8(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int) = 5, implicit def foo9(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int, a8: Int) = 5)
+res38: meta.Defn.Object =
+object Foo {
+  implicit def foo1() = 5
+  implicit def foo2(a1: Int) = 5
+  implicit def foo3(a1: Int, a2: Int) = 5
+  implicit def foo4(a1: Int, a2: Int,...
+
+scala> scala.meta.
+AbsolutePath       Structure                         XtensionQuasiquoteMod
+Case               Syntax                            XtensionQuasiquoteSelf
+Classpath          Template                          XtensionQuasiquoteSource
+Ctor               Term                              XtensionQuasiquoteTemplate
+Decl               Token                             XtensionQuasiquoteTerm
+Defn               TokenizeException                 XtensionQuasiquoteTermParam
+Dialect            Tokenized                         XtensionQuasiquoteType
+DialectLiftables   Tokens                            XtensionQuasiquoteTypeParam
+Enumerator         Transformer                       XtensionShow
+Import             Traverser                         XtensionStructure
+Importee           Tree                              XtensionSyntax
+Importer           Type                              XtensionTokenizeDialectInput
+Init               Unlift                            XtensionTokenizeInputDialect
+Input              XtensionClassifiable              XtensionTokenizeInputLike
+Lift               XtensionCollectionLikeUI          XtensionTokenizersDialectApply
+Lit                XtensionDialectApply              classifiers
+Member             XtensionDialectTokenSyntax        common
+Mod                XtensionDialectTokensSyntax       dialects
+Name               XtensionDialectTreeSyntax         inputs
+ParseException     XtensionParseDialectInput         internal
+Parsed             XtensionParseInputDialect         io
+Pat                XtensionParseInputLike            package
+Pkg                XtensionParsersDialectApply       parsers
+Position           XtensionParsersDialectInput       prettyprinters
+Ref                XtensionQuasiquoteCaseOrPattern   quasiquotes
+RelativePath       XtensionQuasiquoteEnumerator      tokenizers
+Self               XtensionQuasiquoteImportee        tokens
+Source             XtensionQuasiquoteImporter        transversers
+Stat               XtensionQuasiquoteInit            trees
+
+scala> scala.meta.parsers
+   final package parsers
+
+scala> scala.meta.parsers.
+Aliases   ParseException              XtensionParseInputDialect     package
+Api       Parsed                      XtensionParseInputLike
+Parse     XtensionParseDialectInput   XtensionParsersDialectInput
+
+scala> scala.meta.parsers.Parse
+Parse   ParseException   Parsed
+
+scala> scala.meta.parsers.Parse
+   object Parse
+
+scala> scala.meta.parsers.Parse.parse
+parseCase         parseImportee   parseMod    parseSource     parseTerm        parseTypeParam
+parseCtor         parseImporter   parsePat    parseStat       parseTermParam
+parseEnumerator   parseInit       parseSelf   parseTemplate   parseType
+
+scala> scala.meta.parsers.Parse.parse
+
+def parse[U](implicit convert: scala.meta.common.Convert[meta.parsers.Parse.type,scala.meta.inputs.Input],implicit parse: scala.meta.parsers.Parse[U],implicit dialect: scala.meta.Dialect): scala.meta.parsers.Parsed[U]
+
+scala> scala.meta.parsers.Parse.parseS
+parseSelf   parseSource   parseStat
+
+scala> scala.meta.parsers.Parse.parseS
+parseSelf   parseSource   parseStat
+
+scala> scala.meta.parsers.Parse.parseSource
+   implicit lazy val parseSource: scala.meta.parsers.Parse[scala.meta.Source]
+
+scala> scala.meta.parsers.Parse.parseSource.apply
+
+def apply(input: scala.meta.inputs.Input,dialect: scala.meta.Dialect): scala.meta.parsers.Parsed[scala.meta.Source]
+
+scala> scala.meta.parsers
+   final package parsers
+
+scala> scala.meta.
+AbsolutePath       Structure                         XtensionQuasiquoteMod
+Case               Syntax                            XtensionQuasiquoteSelf
+Classpath          Template                          XtensionQuasiquoteSource
+Ctor               Term                              XtensionQuasiquoteTemplate
+Decl               Token                             XtensionQuasiquoteTerm
+Defn               TokenizeException                 XtensionQuasiquoteTermParam
+Dialect            Tokenized                         XtensionQuasiquoteType
+DialectLiftables   Tokens                            XtensionQuasiquoteTypeParam
+Enumerator         Transformer                       XtensionShow
+Import             Traverser                         XtensionStructure
+Importee           Tree                              XtensionSyntax
+Importer           Type                              XtensionTokenizeDialectInput
+Init               Unlift                            XtensionTokenizeInputDialect
+Input              XtensionClassifiable              XtensionTokenizeInputLike
+Lift               XtensionCollectionLikeUI          XtensionTokenizersDialectApply
+Lit                XtensionDialectApply              classifiers
+Member             XtensionDialectTokenSyntax        common
+Mod                XtensionDialectTokensSyntax       dialects
+Name               XtensionDialectTreeSyntax         inputs
+ParseException     XtensionParseDialectInput         internal
+Parsed             XtensionParseInputDialect         io
+Pat                XtensionParseInputLike            package
+Pkg                XtensionParsersDialectApply       parsers
+Position           XtensionParsersDialectInput       prettyprinters
+Ref                XtensionQuasiquoteCaseOrPattern   quasiquotes
+RelativePath       XtensionQuasiquoteEnumerator      tokenizers
+Self               XtensionQuasiquoteImportee        tokens
+Source             XtensionQuasiquoteImporter        transversers
+Stat               XtensionQuasiquoteInit            trees
+
+scala>
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+val params = (1 until 10).toList.map { i =>
+  val params: List[Term.Param] = (1 until i).toList.map { j =>
+    Term.Param(Nil, Term.Name(s"a${j}"), Some(Type.Name("Int")), None)
+  }
+  q"implicit def ${Term.Name(s"foo${i}")}(..${params}) = 5"
+}
+
+q"object Foo { ..${params} }"
+
+// Exiting paste mode, now interpreting.
+
+params: List[meta.Defn.Def] = List(implicit def foo1() = 5, implicit def foo2(a1: Int) = 5, implicit def foo3(a1: Int, a2: Int) = 5, implicit def foo4(a1: Int, a2: Int, a3: Int) = 5, implicit def foo5(a1: Int, a2: Int, a3: Int, a4: Int) = 5, implicit def foo6(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int) = 5, implicit def foo7(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int) = 5, implicit def foo8(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int) = 5, implicit def foo9(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int, a8: Int) = 5)
+res39: meta.Defn.Object =
+object Foo {
+  implicit def foo1() = 5
+  implicit def foo2(a1: Int) = 5
+  implicit def foo3(a1: Int, a2: Int) = 5
+  implicit def foo4(a1: Int, a2: Int,...
+
+scala> print res39
+<console>:15: error: missing argument list for method print in object Predef
+Unapplied methods are only converted to functions when a function type is expected.
+You can make this conversion explicit by writing `print _` or `print(_)` instead of `print`.
+       print res39
+       ^
+<console>:15: warning: postfix operator res39 should be enabled
+by making the implicit value scala.language.postfixOps visible.
+This can be achieved by adding the import clause 'import scala.language.postfixOps'
+or by setting the compiler option -language:postfixOps.
+See the Scaladoc for value scala.language.postfixOps for a discussion
+why the feature should be explicitly enabled.
+       print res39
+             ^
+
+scala> println(res39)
+object Foo {
+  implicit def foo1() = 5
+  implicit def foo2(a1: Int) = 5
+  implicit def foo3(a1: Int, a2: Int) = 5
+  implicit def foo4(a1: Int, a2: Int, a3: Int) = 5
+  implicit def foo5(a1: Int, a2: Int, a3: Int, a4: Int) = 5
+  implicit def foo6(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int) = 5
+  implicit def foo7(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int) = 5
+  implicit def foo8(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int) = 5
+  implicit def foo9(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int, a8: Int) = 5
+}
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+object Foo {
+  implicit def foo1() = 5
+  implicit def foo2(a1: Int) = 5
+  implicit def foo3(a1: Int, a2: Int) = 5
+  implicit def foo4(a1: Int, a2: Int, a3: Int) = 5
+  implicit def foo5(a1: Int, a2: Int, a3: Int, a4: Int) = 5
+  implicit def foo6(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int) = 5
+  implicit def foo7(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int) = 5
+  implicit def foo8(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int) = 5
+  implicit def foo9(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int, a8: Int) = 5
+}
+
+// Exiting paste mode, now interpreting.
+
+<pastie>:16: warning: implicit conversion method foo2 should be enabled
+by making the implicit value scala.language.implicitConversions visible.
+This can be achieved by adding the import clause 'import scala.language.implicitConversions'
+or by setting the compiler option -language:implicitConversions.
+See the Scaladoc for value scala.language.implicitConversions for a discussion
+why the feature should be explicitly enabled.
+  implicit def foo2(a1: Int) = 5
+               ^
+defined object Foo
+warning: previously defined class Foo is not a companion to object Foo.
+Companions must be defined together; you may wish to use :paste mode for this.
+
+scala> Foo.foo
+foo1   foo2   foo3   foo4   foo5   foo6   foo7   foo8   foo9
+
+scala> :paste
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+val params = (1 until 10).toList.map { i =>
+  val params: List[Term.Param] = (1 until i).toList.map { j =>
+    Term.Param(Nil, Term.Name(s"a${j}"), Some(Type.Name("Int")), None)
+  }
+  q"implicit def ${Term.Name(s"foo${i}")}(..${params}) = ${Lit.Int(i)} + ${Lit.Int(j)}"
+}
+
+q"object Foo { ..${params} }"
+
+// Exiting paste mode, now interpreting.
+
+<pastie>:19: error: not found: value j
+  q"implicit def ${Term.Name(s"foo${i}")}(..${params}) = ${Lit.Int(i)} + ${Lit.Int(j)}"
+                                                                                   ^
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+val params = (1 until 10).toList.map { i =>
+  val params: List[Term.Param] = (1 until i).toList.map { j =>
+    Term.Param(Nil, Term.Name(s"a${j}"), Some(Type.Name("Int")), None)
+  }
+  q"implicit def ${Term.Name(s"foo${i}")}(..${params}) = ${Lit.Int(i)}"
+}
+
+q"object Foo { ..${params} }"
+
+// Exiting paste mode, now interpreting.
+
+params: List[meta.Defn.Def] = List(implicit def foo1() = 1, implicit def foo2(a1: Int) = 2, implicit def foo3(a1: Int, a2: Int) = 3, implicit def foo4(a1: Int, a2: Int, a3: Int) = 4, implicit def foo5(a1: Int, a2: Int, a3: Int, a4: Int) = 5, implicit def foo6(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int) = 6, implicit def foo7(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int) = 7, implicit def foo8(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int) = 8, implicit def foo9(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int, a8: Int) = 9)
+res43: meta.Defn.Object =
+object Foo {
+  implicit def foo1() = 1
+  implicit def foo2(a1: Int) = 2
+  implicit def foo3(a1: Int, a2: Int) = 3
+  implicit def foo4(a1: Int, a2: Int,...
+
+scala> println(res43)
+object Foo {
+  implicit def foo1() = 1
+  implicit def foo2(a1: Int) = 2
+  implicit def foo3(a1: Int, a2: Int) = 3
+  implicit def foo4(a1: Int, a2: Int, a3: Int) = 4
+  implicit def foo5(a1: Int, a2: Int, a3: Int, a4: Int) = 5
+  implicit def foo6(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int) = 6
+  implicit def foo7(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int) = 7
+  implicit def foo8(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int) = 8
+  implicit def foo9(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int, a8: Int) = 9
+}
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+val params = (1 until 10).toList.map { i =>
+  val params: List[Term.Param] = (1 to i).toList.map { j =>
+    Term.Param(Nil, Term.Name(s"a${j}"), Some(Type.Name("Int")), None)
+  }
+  q"implicit def ${Term.Name(s"foo${i}")}(..${params}) = ${Lit.Int(i)}"
+}
+
+q"object Foo { ..${params} }"
+
+// Exiting paste mode, now interpreting.
+
+params: List[meta.Defn.Def] = List(implicit def foo1(a1: Int) = 1, implicit def foo2(a1: Int, a2: Int) = 2, implicit def foo3(a1: Int, a2: Int, a3: Int) = 3, implicit def foo4(a1: Int, a2: Int, a3: Int, a4: Int) = 4, implicit def foo5(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int) = 5, implicit def foo6(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int) = 6, implicit def foo7(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int) = 7, implicit def foo8(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int, a8: Int) = 8, implicit def foo9(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int, a8: Int, a9: Int) = 9)
+res45: meta.Defn.Object =
+object Foo {
+  implicit def foo1(a1: Int) = 1
+  implicit def foo2(a1: In...
+
+scala> println(res45)
+object Foo {
+  implicit def foo1(a1: Int) = 1
+  implicit def foo2(a1: Int, a2: Int) = 2
+  implicit def foo3(a1: Int, a2: Int, a3: Int) = 3
+  implicit def foo4(a1: Int, a2: Int, a3: Int, a4: Int) = 4
+  implicit def foo5(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int) = 5
+  implicit def foo6(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int) = 6
+  implicit def foo7(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int) = 7
+  implicit def foo8(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int, a8: Int) = 8
+  implicit def foo9(a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int, a8: Int, a9: Int) = 9
+}
+
+scala> q"def ${Term.Name("This is a weird name for a function!")} = 5"
+res47: meta.Defn.Def = def `This is a weird name for a function!` = 5
+
+scala> def `This is a weird name for a function!` = 5
+This$u0020is$u0020a$u0020weird$u0020name$u0020for$u0020a$u0020function$bang: Int
+
+scala> `This is a weird name for a function!`
+res48: Int = 5
+
+scala> trait Show[A1] { def show(val1: A1): String }
+defined trait Show
+
+scala> trait ShowTuple[A1] { def show(vals: Tuple1[A1]): String }
+defined trait ShowTuple
+
+scala> implicit object ShowTupleInt[Int] { def show(vals: Tuple1[Int]): String = { val Tuple1(a) = vals; a.toString }
+<console>:1: error: ';' expected but '[' found.
+       implicit object ShowTupleInt[Int] { def show(vals: Tuple1[Int]): String = { val Tuple1(a) = vals; a.toString }
+                                   ^
+
+scala> implicit object ShowTupleInt extends ShowTuple[Int] { def show(vals: Tuple1[Int]): String
+= { val Tuple1(a) = vals; a.toString }
+     |
+     |
+You typed two blank lines.  Starting a new command.
+
+scala> implicit object ShowTupleInt extends ShowTuple[Int] { def show(vals: Tuple1[Int]): String = { val Tuple1(a) = vals; a.toString } }
+defined object ShowTupleInt
+
+scala> implicitly[ShowTuple[Int]].show(Tuple1("hello"))
+<console>:17: error: type mismatch;
+ found   : String("hello")
+ required: Int
+       implicitly[ShowTuple[Int]].show(Tuple1("hello"))
+                                              ^
+
+scala> implicitly[ShowTuple[Int]].show(Tuple1(5))
+res50: String = 5
+
+scala> val q"trait ShowTuple[..${tparams}] { def show(vals: Tuple1[A1]): String }" = q"trait ShowTuple[A1] { def show(vals: Tuple1[A1]): String }"
+tparams: List[meta.Type.Param] = List(A1)
+
+scala> val q"trait ShowTuple[..${tparams}] { def show(vals: ${tclass}[..${tparams1}]): String }"
+= q"trait ShowTuple[A1] { def show(vals: Tuple1[A1]): String }"
+tparams: List[meta.Type.Param] = List(A1)
+tclass: scala.meta.Type = Tuple1
+tparams1: List[scala.meta.Type] = List(A1)
+
+scala> val q"trait ShowTuple[..${tparams}] { def show(vals: ${tclass}[..${tparams}]): String }" =
+ q"trait ShowTuple[A1] { def show(vals: Tuple1[A1]): String }"
+<console>:17: error: tparams is already defined as value tparams
+       val q"trait ShowTuple[..${tparams}] { def show(vals: ${tclass}[..${tparams}]): String }" = q"trait ShowTuple[A1] { def show(vals: Tuple1[A1]): String }"
+                                                                          ^
+
+scala> val q"trait ShowTuple[..${tparams}] { def show(vals: ${tclass}[..${`tparams`}]): String }"
+ = q"trait ShowTuple[A1] { def show(vals: Tuple1[A1]): String }"
+<console>:17: error: recursive value x$1 needs type
+       val q"trait ShowTuple[..${tparams}] { def show(vals: ${tclass}[..${`tparams`}]): String }" = q"trait ShowTuple[A1] { def show(vals: Tuple1[A1]): String }"
+                                 ^
+
+scala> val q"trait ShowTuple[..${tparams}] { def show(vals: ${tclass}[..${tparams1}]): String }" = q"trait ShowTuple[A1] { def show(vals: Tuple1[A1]): String }"
+tparams: List[meta.Type.Param] = List(A1)
+tclass: scala.meta.Type = Tuple1
+tparams1: List[scala.meta.Type] = List(A1)
+
+scala> val q"trait ${tclassName}[..${tparams}] { def show(vals: ${tclass}[..${`tparams`}]): Strin
+g }" = q"trait ShowTuple[A1] { def show(vals: Tuple1[A1]): String }"
+<console>:17: error: recursive value x$1 needs type
+       val q"trait ${tclassName}[..${tparams}] { def show(vals: ${tclass}[..${`tparams`}]): String }" = q"trait ShowTuple[A1] { def show(vals: Tuple1[A1]): String }"
+                                     ^
+
+scala> val q"trait ShowTuple[..${tparams}] { def show(vals: ${tclass}[..${tparams1}]): String }" = q"trait ShowTuple[A1] { def show(vals: Tuple1[A1]): String }"
+tparams: List[meta.Type.Param] = List(A1)
+tclass: scala.meta.Type = Tuple1
+tparams1: List[scala.meta.Type] = List(A1)
+
+scala> val q"trait ${tclassName}[..${tparams}] { def show(vals: ${tclass}[..${tparams1}]): String
+ }" = q"trait ShowTuple[A1] { def show(vals: Tuple1[A1]): String }"
+tclassName: meta.Type.Name = ShowTuple
+tparams: List[meta.Type.Param] = List(A1)
+tclass: scala.meta.Type = Tuple1
+tparams1: List[scala.meta.Type] = List(A1)
+
+scala> tparams(0).structure
+res51: String = Type.Param(Nil, Type.Name("A1"), Nil, Type.Bounds(None, None), Nil, Nil)
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+(1 until 22).foreach { size =>
+  val tparams = (1 to size).toList.map { i =>
+    Type.Param(Nil, Type.Name(s"A${i}"), Nil, Type.Bounds(None, None), Nil, Nil)
+  }
+  val defn = q"trait ${Type.Name(s"ShowTuple${size}")}[..${tparams}] { def show(vals: Tuple22[..${tparams}]): String }"
+  println(defn)
+}
+
+// Exiting paste mode, now interpreting.
+
+<pastie>:21: error: type mismatch when unquoting;
+ found   : List[scala.meta.Type.Param]
+ required: List[scala.meta.Type]
+  val defn = q"trait ${Type.Name(s"ShowTuple${size}")}[..${tparams}] { def show(vals: Tuple22[..${tparams}]): String }"
+                                                                                                ^
+
+scala> tparams1(0).structure
+res53: String = Type.Name("A1")
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+(1 until 22).foreach { size =>
+  val (tparams, tparams1) = (1 to size).toList.map { i =>
+  val tname = Type.Name(s"A${i}")
+    (Type.Param(Nil, tname, Nil, Type.Bounds(None, None), Nil, Nil),
+      tname)
+  }.unzip
+  val defn = q"trait ${Type.Name(s"ShowTuple${size}")}[..${tparams}] { def show(vals: Tuple22[..${tparams1}]): String }"
+  println(defn)
+}
+
+// Exiting paste mode, now interpreting.
+
+trait ShowTuple1[A1] { def show(vals: Tuple22[A1]): String }
+trait ShowTuple2[A1, A2] { def show(vals: Tuple22[A1, A2]): String }
+trait ShowTuple3[A1, A2, A3] { def show(vals: Tuple22[A1, A2, A3]): String }
+trait ShowTuple4[A1, A2, A3, A4] { def show(vals: Tuple22[A1, A2, A3, A4]): String }
+trait ShowTuple5[A1, A2, A3, A4, A5] { def show(vals: Tuple22[A1, A2, A3, A4, A5]): String }
+trait ShowTuple6[A1, A2, A3, A4, A5, A6] { def show(vals: Tuple22[A1, A2, A3, A4, A5, A6]): String }
+trait ShowTuple7[A1, A2, A3, A4, A5, A6, A7] { def show(vals: Tuple22[A1, A2, A3, A4, A5, A6, A7]): String }
+trait ShowTuple8[A1, A2, A3, A4, A5, A6, A7, A8] { def show(vals: Tuple22[A1, A2, A3, A4, A5, A6, A7, A8]): String }
+trait ShowTuple9[A1, A2, A3, A4, A5, A6, A7, A8, A9] { def show(vals: Tuple22[A1, A2, A3, A4, A5, A6, A7, A8, A9]): String }
+trait ShowTuple10[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10] { def show(vals: Tuple22[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10]): String }
+trait ShowTuple11[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11] { def show(vals: Tuple22[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11]): String }
+trait ShowTuple12[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12] { def show(vals: Tuple22[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12]): String }
+trait ShowTuple13[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13] { def show(vals: Tuple22[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13]): String }
+trait ShowTuple14[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14] { def show(vals: Tuple22[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14]): String }
+trait ShowTuple15[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15] { def show(vals: Tuple22[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15]): String }
+trait ShowTuple16[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16] { def show(vals: Tuple22[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16]): String }
+trait ShowTuple17[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17] { def show(vals: Tuple22[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17]): String }
+trait ShowTuple18[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18] { def show(vals: Tuple22[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18]): String }
+trait ShowTuple19[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19] { def show(vals: Tuple22[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19]): String }
+trait ShowTuple20[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19, A20] { def show(vals: Tuple22[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19, A20]): String }
+trait ShowTuple21[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19, A20, A21] { def show(vals: Tuple22[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19, A20, A21]): String }
+
+scala>
