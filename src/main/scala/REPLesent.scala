@@ -14,14 +14,35 @@ package replesent
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+object REPLesent {
+  import scala.language.implicitConversions
+  trait Interpreter {
+    def interpret(code: String): Unit
+  }
+
+  object Interpreter {
+    object dummy extends Interpreter {
+      def interpret(code: String): Unit = Console.err.print(s"No reference to REPL found. Please call with parameter intp=$$intp")
+    }
+
+    implicit def apply(intp: scala.tools.nsc.interpreter.IMain): Interpreter = Option(intp).fold[Interpreter](dummy) { value =>
+      new Interpreter {
+        def interpret(code: String): Unit = {
+          val _ = intp.interpret(code)
+        }
+      }
+    }
+  }
+}
+
 case class REPLesent(
   width: Int = 0
 , height: Int = 0
 , source: String = "REPLesent.txt"
 , slideCounter: Boolean = false
 , slideTotal: Boolean = false
-, padNewline: Boolean = true
-, intp: _root_.scala.tools.nsc.interpreter.IMain = null
+, padNewline: Boolean = false
+, intp: REPLesent.Interpreter = REPLesent.Interpreter.dummy
 ) {
   import java.io.File
   import scala.util.matching.Regex
@@ -261,7 +282,7 @@ case class REPLesent(
 
       val content: String = emojiEscape.replaceAllIn(line, m => {
         m.group(1) match {
-          case e if emojis.contains(e) => drop += m.matched.length - 2; emojis(e)
+          case e if emojis.contains(e) => drop += m.matched.length - 1; emojis(e)
           case _ => m.matched
         }
       })
@@ -346,10 +367,10 @@ case class REPLesent(
     def runCode: Unit = {
       val code = currentSlide.code(buildCursor)
 
-      if (repl.isEmpty) {
-        Console.err.print(s"No reference to REPL found. Please call with parameter intp=$$intp")
-      } else if (code.isEmpty) {
+      if (code.isEmpty) {
         Console.err.print("No code for you")
+      } else if (repl.isEmpty) {
+        Console.err.print(s"No reference to REPL found. Please call with parameter intp=$$intp")
       } else {
         repl foreach (_.interpret(code))
       }
