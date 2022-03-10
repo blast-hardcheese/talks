@@ -23,5 +23,13 @@ lazy val root = (project in file("."))
     ),
     addCompilerPlugin("org.typelevel" %% "kind-projector"     % "0.13.2" cross CrossVersion.full),
     addCompilerPlugin("com.olegpy"    %% "better-monadic-for" % "0.3.1"),
-    testFrameworks += new TestFramework("munit.Framework")
+    testFrameworks += new TestFramework("munit.Framework"),
+
+    // guardrail internals currently import too many things and define parameters that are not always used.
+    // If this is a problem, defining a subproject explicitly to contain your
+    // generated code and using `dependOn` to bring that into your project lets you scope your warnings.
+    scalacOptions --= Seq("-Wunused:imports", "-Wunused:params"),
+
+    // A single server, based on `myserver.yaml`, using http4s
+    Compile / guardrailTasks += ScalaServer(file("myserver.yaml"), "dev.guardrail.example.routes", framework="http4s")
   )

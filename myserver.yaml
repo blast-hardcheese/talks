@@ -1,0 +1,16 @@
+openapi: "3.0.0"
+info:
+  version: 0.1.0
+  title: Simple server
+  license:
+    name: MIT
+servers:
+  - url: http://localhost/
+paths:
+  /pets:
+    get:
+      summary: List all pets
+      operationId: listPets
+      responses:
+        200:
+          description: 'Looking good!'
