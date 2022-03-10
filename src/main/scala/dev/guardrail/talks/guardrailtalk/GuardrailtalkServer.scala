@@ -19,18 +19,10 @@ object GuardrailtalkServer {
 
   def stream[F[_]: Async]: Stream[F, Nothing] = {
     for {
-      client <- Stream.resource(EmberClientBuilder.default[F].build)
-      helloWorldAlg = HelloWorld.impl[F]
-      jokeAlg = Jokes.impl[F](client)
+      _ <- Stream.resource(EmberClientBuilder.default[F].build)
 
-      // Combine Service Routes into an HttpApp.
-      // Can also be done via a Router if you
-      // want to extract a segments not checked
-      // in the underlying routes.
       httpApp = (
-        new routes.Resource[F]().routes(new PetRoutes[F]) <+>
-        GuardrailtalkRoutes.helloWorldRoutes[F](helloWorldAlg) <+>
-        GuardrailtalkRoutes.jokeRoutes[F](jokeAlg)
+        new routes.Resource[F]().routes(new PetRoutes[F])
       ).orNotFound
 
       // With Middlewares in place
