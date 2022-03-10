@@ -11,6 +11,15 @@ paths:
     get:
       summary: List all pets
       operationId: listPets
+      parameters:
+        - name: tag
+          in: query
+          description: Only return pets with these tags
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
       responses:
         200:
           description: 'Looking good!'
