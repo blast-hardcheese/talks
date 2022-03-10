@@ -33,5 +33,6 @@ lazy val root = (project in file("."))
     // A single server, based on `myserver.yaml`, using http4s
     Compile / guardrailTasks += ScalaServer(file("myserver.yaml"), "dev.guardrail.example.routes", framework="http4s"),
     Test / guardrailTasks += ScalaClient(file("myserver.yaml"), "dev.guardrail.example.client", framework="http4s"),
-    Compile / guardrailTasks += ScalaClient(file("dadjoke.yaml"), "com.icanhazdadjoke", framework="http4s")
+    Compile / guardrailTasks += ScalaClient(file("dadjoke.yaml"), "com.icanhazdadjoke", framework="http4s"),
+    Test / guardrailTasks += ScalaServer(file("dadjoke.yaml"), "com.icanhazdadjoke", framework="http4s")
   )

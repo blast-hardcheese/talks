@@ -14,7 +14,9 @@ import org.http4s.circe._
 
 import dev.guardrail.example
 import cats.FlatMap
-import com.icanhazdadjoke.joke.JokeClient
+import cats.implicits._
+import com.icanhazdadjoke.joke.{ JokeClient, JokeHandler, JokeResource }
+import com.icanhazdadjoke.definitions.Joke
 
 class HelloWorldSpec extends CatsEffectSuite {
 
@@ -48,13 +50,21 @@ class HelloWorldSpec extends CatsEffectSuite {
             handleOk = _ => Left(id + 1),
             handleNotFound = msg => Right(msg)
           ))
-      ).map(_.message),
-      "No pet found with id=3"
+      ),
+      example.client.definitions.PetNotFoundResponse(
+        message="No pet found with id=3",
+        joke=Some("This is a joke!")
+      )
     )
   }
 
+  private[this] val staticJokeHandler: JokeHandler[IO] =
+    new JokeHandler[IO] {
+      def getJoke(respond: JokeResource.GetJokeResponse.type)(): IO[JokeResource.GetJokeResponse] = respond.Ok(Joke("This is a joke!")).pure[IO].widen
+    }
+
   private[this] val staticJokeService: HttpApp[IO] =
-    HttpApp.notFound[IO]
+    new JokeResource[IO]().routes(staticJokeHandler).orNotFound
 
   private[this] val staticJokeClient: JokeClient[IO] =
     JokeClient.httpClient[IO](Client.fromHttpApp(staticJokeService))
