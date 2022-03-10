@@ -12,6 +12,14 @@ class PetRoutes[F[_]: Sync] extends Handler[F] {
     Pet(id=2L, "Fido", Some("bitey"))
   )
 
+  def getPet(respond: Resource.GetPetResponse.type)(id: Long): F[Resource.GetPetResponse] = {
+    pets
+      .filter(_.id == id)
+      .headOption
+      .fold[Resource.GetPetResponse](respond.NotFound(s"No pet found with id=${id}"))(respond.Ok)
+      .pure[F]
+  }
+
   def listPets(respond: Resource.ListPetsResponse.type)(tag: Option[Iterable[String]]): F[Resource.ListPetsResponse] = respond.Ok(
     pets.filter(pet => tag.forall(_.exists(pet.tag.contains)))
   ).pure[F].widen

@@ -7,6 +7,31 @@ info:
 servers:
   - url: http://localhost/
 paths:
+  /pet/{id}:
+    get:
+      summary: Get a pet by ID
+      operationId: getPet
+      parameters:
+        - name: id
+          in: path
+          description: Pet ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: string
   /pets:
     get:
       summary: List all pets
