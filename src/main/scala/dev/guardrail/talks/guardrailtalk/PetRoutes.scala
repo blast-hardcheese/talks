@@ -4,7 +4,13 @@ import cats.effect.{ IO, Sync }
 import cats.implicits._
 
 import dev.guardrail.example.routes.{ Handler, Resource }
+import dev.guardrail.example.routes.definitions.Pet
 
 class PetRoutes[F[_]: Sync] extends Handler[F] {
-  def listPets(respond: Resource.ListPetsResponse.type)(): F[Resource.ListPetsResponse] = respond.Ok("Fluffy, Fido").pure[F].widen
+  def listPets(respond: Resource.ListPetsResponse.type)(): F[Resource.ListPetsResponse] = respond.Ok(
+    Vector(
+      Pet(id=1L, "Fluffy", Some("soft")),
+      Pet(id=2L, "Fido", Some("bitey"))
+    )
+  ).pure[F].widen
 }
