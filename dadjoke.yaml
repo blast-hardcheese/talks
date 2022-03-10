@@ -1,0 +1,27 @@
+openapi: "3.0.0"
+info:
+  version: 0.1.0
+  title: icanhazdadjoke.com
+servers:
+  - url: https://icanhazdadjoke.com/
+paths:
+  /:
+    get:
+      summary: Get a joke
+      operationId: getJoke
+      responses:
+        200:
+          description: 'Dad joke time'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Joke'
+components:
+  schemas:
+    Joke:
+      type: object
+      required:
+        - joke
+      properties:
+        joke:
+          type: string
