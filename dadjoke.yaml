@@ -8,6 +8,7 @@ paths:
   /:
     get:
       summary: Get a joke
+      x-scala-package: joke
       operationId: getJoke
       responses:
         200:

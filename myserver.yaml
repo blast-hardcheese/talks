@@ -31,7 +31,7 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/PetNotFoundResponse'
   /pets:
     get:
       summary: List all pets
@@ -71,3 +71,13 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/Pet"
+    PetNotFoundResponse:
+      type: object
+      required:
+        - message
+        - joke
+      properties:
+        message:
+          type: string
+        joke:
+          type: string
