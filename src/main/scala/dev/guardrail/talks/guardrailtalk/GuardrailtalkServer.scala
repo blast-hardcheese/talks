@@ -1,13 +1,19 @@
 package dev.guardrail.talks.guardrailtalk
 
+import cats.effect.IO
 import cats.effect.{Async, Resource}
 import cats.syntax.all._
+
 import com.comcast.ip4s._
+
 import fs2.Stream
+
 import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits._
 import org.http4s.server.middleware.Logger
+
+import dev.guardrail.example.routes
 
 object GuardrailtalkServer {
 
@@ -22,6 +28,7 @@ object GuardrailtalkServer {
       // want to extract a segments not checked
       // in the underlying routes.
       httpApp = (
+        new routes.Resource[F]().routes(new PetRoutes[F]) <+>
         GuardrailtalkRoutes.helloWorldRoutes[F](helloWorldAlg) <+>
         GuardrailtalkRoutes.jokeRoutes[F](jokeAlg)
       ).orNotFound

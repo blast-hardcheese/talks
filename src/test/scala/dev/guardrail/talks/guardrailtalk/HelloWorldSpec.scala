@@ -1,9 +1,13 @@
 package dev.guardrail.talks.guardrailtalk
 
 import cats.effect.IO
+
+import munit.CatsEffectSuite
+
 import org.http4s._
 import org.http4s.implicits._
-import munit.CatsEffectSuite
+
+import dev.guardrail.example
 
 class HelloWorldSpec extends CatsEffectSuite {
 
@@ -12,12 +16,13 @@ class HelloWorldSpec extends CatsEffectSuite {
   }
 
   test("HelloWorld returns hello world message") {
-    assertIO(retHelloWorld.flatMap(_.as[String]), "{\"message\":\"Hello, world\"}")
+    assertIO(retHelloWorld.flatMap(_.as[String]), "")
   }
 
+  private[this] val service: HttpApp[IO] =
+    new example.routes.Resource[IO]().routes(new PetRoutes[IO]).orNotFound
+
   private[this] val retHelloWorld: IO[Response[IO]] = {
-    val getHW = Request[IO](Method.GET, uri"/hello/world")
-    val helloWorld = HelloWorld.impl[IO]
-    GuardrailtalkRoutes.helloWorldRoutes(helloWorld).orNotFound(getHW)
+    service(Request[IO](Method.GET, uri"/pets"))
   }
 }
