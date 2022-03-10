@@ -19,8 +19,9 @@ class PetRoutes[F[_]: Sync](jokeClient: JokeClient[F]) extends Handler[F] {
       resp <- jokeClient.getJoke()
     } yield resp.fold(
       handleOk={ case Joke(joke) =>
-        respond.NotFound(PetNotFoundResponse(s"No pet found with id=${id}", joke))
-      }
+        respond.NotFound(PetNotFoundResponse(s"No pet found with id=${id}", Some(joke)))
+      },
+      handleNotFound=respond.NotFound(PetNotFoundResponse(s"No pet found with id=${id}", None))
     )
     pets
       .filter(_.id == id)

@@ -17,6 +17,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Joke'
+        404:
+          description: No dad jokes found, sorry
 components:
   schemas:
     Joke:

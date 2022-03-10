@@ -75,7 +75,6 @@ components:
       type: object
       required:
         - message
-        - joke
       properties:
         message:
           type: string
