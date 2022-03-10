@@ -28,8 +28,9 @@ lazy val root = (project in file("."))
     // guardrail internals currently import too many things and define parameters that are not always used.
     // If this is a problem, defining a subproject explicitly to contain your
     // generated code and using `dependOn` to bring that into your project lets you scope your warnings.
-    scalacOptions --= Seq("-Wunused:imports", "-Wunused:params"),
+    scalacOptions --= Seq("-Wunused:imports", "-Wunused:params", "-Wunused:privates"),
 
     // A single server, based on `myserver.yaml`, using http4s
-    Compile / guardrailTasks += ScalaServer(file("myserver.yaml"), "dev.guardrail.example.routes", framework="http4s")
+    Compile / guardrailTasks += ScalaServer(file("myserver.yaml"), "dev.guardrail.example.routes", framework="http4s"),
+    Test / guardrailTasks += ScalaClient(file("myserver.yaml"), "dev.guardrail.example.client", framework="http4s")
   )
