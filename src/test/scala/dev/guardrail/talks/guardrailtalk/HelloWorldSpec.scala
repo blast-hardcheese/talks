@@ -7,6 +7,8 @@ import io.circe.Json
 import munit.CatsEffectSuite
 
 import org.http4s._
+import org.http4s.circe._
+import org.http4s.client.Client
 import org.http4s.implicits._
 import org.http4s.circe._
 
@@ -23,6 +25,15 @@ class HelloWorldSpec extends CatsEffectSuite {
       Json.obj("id" -> Json.fromLong(1L), "name" -> Json.fromString("Fluffy"), "tag" -> Json.fromString("soft")),
       Json.obj("id" -> Json.fromLong(2L), "name" -> Json.fromString("Fido"), "tag" -> Json.fromString("bitey")),
     ))
+  }
+
+  test("List pets via client") {
+    val client = example.client.Client.httpClient(Client.fromHttpApp(service))
+
+    assertIO(client.listPets(), example.client.ListPetsResponse.Ok(Vector(
+      example.client.definitions.Pet(1L, "Fluffy", Some("soft")),
+      example.client.definitions.Pet(2L, "Fido", Some("bitey"))
+    )))
   }
 
   private[this] val service: HttpApp[IO] =
