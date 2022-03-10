@@ -14,3 +14,7 @@ paths:
       responses:
         200:
           description: 'Looking good!'
+          content:
+            application/json:
+              schema:
+                type: string

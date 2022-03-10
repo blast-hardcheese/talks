@@ -1,11 +1,13 @@
 package dev.guardrail.talks.guardrailtalk
 
 import cats.effect.IO
+import io.circe.Json
 
 import munit.CatsEffectSuite
 
 import org.http4s._
 import org.http4s.implicits._
+import org.http4s.circe._
 
 import dev.guardrail.example
 
@@ -16,7 +18,7 @@ class HelloWorldSpec extends CatsEffectSuite {
   }
 
   test("HelloWorld returns hello world message") {
-    assertIO(retHelloWorld.flatMap(_.as[String]), "")
+    assertIO(retHelloWorld.flatMap(_.as[Json]), Json.fromString("Fluffy, Fido"))
   }
 
   private[this] val service: HttpApp[IO] =
