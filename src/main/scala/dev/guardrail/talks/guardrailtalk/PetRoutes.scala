@@ -29,7 +29,7 @@ class PetRoutes[F[_]: Sync](jokeClient: JokeClient[F]) extends Handler[F] {
       .fold[F[Resource.GetPetResponse]](notFound.widen)(pet => respond.Ok(pet).pure[F].widen)
   }
 
-  def listPets(respond: Resource.ListPetsResponse.type)(tag: Option[Iterable[String]]): F[Resource.ListPetsResponse] = respond.Ok(
+  def listPets(respond: Resource.ListPetsResponse.type)(tag: Option[Vector[String]]): F[Resource.ListPetsResponse] = respond.Ok(
     pets.filter(pet => tag.forall(_.exists(pet.tag.contains)))
   ).pure[F].widen
 }
