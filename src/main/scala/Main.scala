@@ -1,3 +1,8 @@
 object App extends App {
-  println(Foo(1, "two").copy(b = "two!"))
+  val json = JsonObject(Map(
+    "a" -> JsonNumber(1),
+    "b" -> JsonString("two"),
+  ))
+
+  println(JsonDecoder[Foo].fromJSON(json))
 }

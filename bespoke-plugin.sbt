@@ -28,6 +28,7 @@ def buildPOJO(className: String, parameters: List[scala.meta.Term.Param]): scala
   source"""
     object ${termName} {
       ${CompanionFunctions.buildApply(typeName, parameters)};
+      ${CompanionFunctions.buildDecoder(typeName, termName, parameters)};
     }
 
     class ${typeName}(..${accessorParams}) {
