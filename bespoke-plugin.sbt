@@ -7,7 +7,7 @@ import _root_.sbt.util.CacheImplicits._
 def emitSources(sourceManagedPath: java.io.File): List[(scala.meta.Source, java.io.File)] = {
   import _root_.scala.meta._
   List(
-    (buildPOJO("Foo", List(param"a: Int", param"b: String")), sourceManagedPath / "Foo.scala"),
+    (buildPOJO("Foo", List(param"a: Int", param"b: String", param"c: Long")), sourceManagedPath / "Foo.scala"),
     (buildPOJO("Bar", List(param"a: Int", param"b: Int", param"c: Int")), sourceManagedPath / "Bar.scala"),
     (buildPOJO("Baz", List.empty), sourceManagedPath / "Baz.scala"),
   )
