@@ -1,10 +1,35 @@
 import _root_.sbt.Keys._
+import _root_.sbt.util.CacheStore
+import _root_.sbt.util.Cache
 import _root_.sbt.util.CacheImplicits._
 
 // The entrypoint of our project's source code generator
 def emitSources(sourceManagedPath: java.io.File): List[(scala.meta.Source, java.io.File)] = {
   import _root_.scala.meta._
-  List.empty
+  List(
+    (buildPOJO("Foo", List(param"a: Int", param"b: String")), sourceManagedPath / "Foo.scala"),
+  )
+}
+
+def buildPOJO(className: String, parameters: List[scala.meta.Term.Param]): scala.meta.Source = {
+  import _root_.scala.meta._
+
+  // Since the same token (eg: Foo) can occur in both the
+  // value position (object Foo, Foo(...)) as well as the
+  // type position (new Foo(...), def ...: Foo = ...,
+  // we need both Term and Type names:
+  val termName = Term.Name(className)
+  val typeName = Type.Name(className)
+
+  val accessorParams = parameters.map { case param"$term: $tpe" => 
+    param"val $term: $tpe"
+  }
+
+  source"""
+    class ${typeName}(..${accessorParams}) {
+      ${PojoFunctions.buildToString(className, parameters)};
+    }
+  """
 }
 
 // A utility function to write scalameta ASTs into files
