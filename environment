@@ -1,0 +1,38 @@
+branch=origin/2023-codegen-domain-separation
+first_slide=5
+
+go() {
+  ref="$(git log --root --oneline --reverse "$branch" | tail -n +$idx | head -n 1 | cut -f 1 -d ' ')"
+  git checkout "$ref"
+  clear
+  git show
+}
+
+start() {
+  idx="$first_slide"
+  go
+}
+
+prev() {
+  idx=$((idx-1))
+  go
+}
+
+p() {
+  prev "$@"
+}
+
+next() {
+  idx=$((idx+1))
+  go
+}
+
+n() {
+  next "$@"
+}
+
+end() {
+  git checkout "$branch"
+  clear
+  git show
+}
