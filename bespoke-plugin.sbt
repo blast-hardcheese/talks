@@ -7,13 +7,13 @@ import _root_.sbt.util.CacheImplicits._
 def emitSources(sourceManagedPath: java.io.File): List[(scala.meta.Source, java.io.File)] = {
   import _root_.scala.meta._
   List(
-    (buildPOJO("Foo", List(param"a: Int", param"b: String", param"c: Long")), sourceManagedPath / "Foo.scala"),
+    (buildPOJO("Foo", List(param"a: Int", param"b: String", param"c: Long"), redactedFields=List(q"b")), sourceManagedPath / "Foo.scala"),
     (buildPOJO("Bar", List(param"a: Int", param"b: Int", param"c: Int")), sourceManagedPath / "Bar.scala"),
     (buildPOJO("Baz", List.empty), sourceManagedPath / "Baz.scala"),
   )
 }
 
-def buildPOJO(className: String, parameters: List[scala.meta.Term.Param]): scala.meta.Source = {
+def buildPOJO(className: String, parameters: List[scala.meta.Term.Param], redactedFields: List[scala.meta.Term.Name] = Nil): scala.meta.Source = {
   import _root_.scala.meta._
 
   // Since the same token (eg: Foo) can occur in both the
@@ -35,7 +35,7 @@ def buildPOJO(className: String, parameters: List[scala.meta.Term.Param]): scala
 
     class ${typeName}(..${accessorParams}) {
       ${PojoFunctions.buildCopy(typeName, termName, parameters)};
-      ${PojoFunctions.buildToString(className, parameters)};
+      ${PojoFunctions.buildToString(className, parameters, redactedFields)};
     }
   """
 }

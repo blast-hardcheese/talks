@@ -2,11 +2,12 @@ object PojoFunctions {
   import _root_.scala.meta._
 
   // Build up the full AST for a useful toString implementation
-  def buildToString(className: String, parameters: List[Term.Param]): Defn.Def = {
+  def buildToString(className: String, parameters: List[Term.Param], redactedFields: List[Term.Name]): Defn.Def = {
     val toStringTerm = {
       val fields: List[Term.ApplyInfix] = parameters.map {
         case param"${term@Term.Name(field)}: $_" =>
-          q"${Lit.String(field + " = ")} + ${term}.toString()"
+          val value = if (redactedFields.exists(_.value == term.value)) Lit.String("***") else q"${term}.toString()"
+          q"${Lit.String(field + " = ")} + ${value}"
       }
 
       val commaSeparated = fields.foldLeft[Option[Term]](None) {
