@@ -230,3 +230,63 @@ object GuardrailApp extends App {
 ???
 ... handler instance gets passed into a routing function to translate into your http library
 
+---
+class: biglist
+
+# `guardrail`
+
+3\. Extensible, high-quality code out of the box
+- Avoid common "gotchas" in libraries
+- Similar idioms across libraries
+- Code like you would have written
+- Generated code lives in normal files
+???
+- Ability to bracket every function, resource cleanup etc
+- Experiment with different libraries by changing your config
+- Take a look at how things are working without needing macro inspection tooling
+
+---
+# In conclusion,
+
+1. Specification-first
+???
+Specification first tooling is a great way to focus on what matters
+
+--
+
+1. Separation of concerns
+???
+firm boundary between your business logic and the underlying protocol
+
+- testability
+- flexibility
+
+--
+
+1. High quality code by default
+???
+Bring your spec into your build path and rely on the typechecker to verify that stuff works
+
+---
+class: title
+
+<center>
+<h1>Thank you</h1>
+</center>
+
+<center><a href="https://guardrail.dev/" style="color: #0000AA; font-size: xx-large">https://guardrail.dev</a></center>
+<br />
+<br />
+<center><a href="https://github.com/blast-hardcheese/talks" style="color: #0000AA; font-size: x-large">github.com/blast-hardcheese/talks</a></center>
+
+```
+  Name:  Devon Stewart
+
+     X: @blast_hardchese
+GitHub:  blast-hardcheese
+
+ Email:  devon@guardrail.dev
+```
+???
+
+If you use guardrail, I invite you to add yourself/company to the Adopters section of the README

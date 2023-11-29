@@ -31,14 +31,59 @@
         padding-top: 1em;
       }
 
-      .biglist ol li {
+      .biglist ol li,
+      .biglist ul li {
         padding-top: 2ex;
         padding-bottom: 2ex;
         font-size: x-large;
       }
 
-      .biglist ol li:first-of-type {
+      .biglist ol li:first-of-type,
+      .biglist ul li:first-of-type {
         padding-top: 0;
+      }
+
+      /* slide-specific layout */
+      .spec-first-yaml {
+        position: relative;
+        z-index: 0;
+      }
+      .spec-first-code {
+        position: absolute;
+        top: 50%;
+        left: 35%;
+        border: 3px solid black;
+        z-index: 1;
+        background: #F0F0F0
+      }
+
+      /*
+      .guardrail-bg {
+        background-color: #FBFAF5;
+      }
+
+      .guardrail-bg::before {
+        background-image: url("images/guardrail.jpg");
+        position: absolute;
+        background-size: cover;
+        content: '';
+        inset: 0;
+      }
+
+      .guardrail-bg.bg-alpha::before {
+        opacity: 0.2;
+      }
+      */
+
+      .title code {
+        position: absolute;
+        font-size: x-large;
+        bottom: 15%;
+        left: 15%;
+      }
+
+      .bg-cover {
+        background-size: cover;
       }
     </style>
   </head>
