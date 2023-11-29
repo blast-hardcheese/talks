@@ -1,0 +1,35 @@
+openapi: 3.0.0
+info:
+  title: Example spec
+  version: 1.0.0
+paths:
+  /login:
+    post:
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              required: [ username, password ]
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginPreseed'
+        '403':
+          description: Bad login
+components:
+  schemas:
+    LoginPreseed:
+      type: object
+      properties:
+        lastLogin:
+          type: string
+          format: date-time
