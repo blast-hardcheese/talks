@@ -114,3 +114,119 @@ Escape hatches:
 - x-scala-type
 - x-server-raw-response
 - turn off the plugin and move the generated sources into your project
+
+---
+background-image: url("images/guardrail.jpg")
+class: bg-cover
+
+???
+Presenting guardrail. A code generator that produces code you would have written yourself.
+
+---
+# `guardrail`
+
+1\. Specification-first development
+
+.spec-first-yaml[
+```openapi
+/login:
+ post:
+  operationId: login
+  requestBody:
+   required: true
+   content:
+    application/x-www-form-urlencoded:
+     schema:
+      required: [ username, password ]
+      properties:
+       username:
+        type: string
+       password:
+        type: string
+  responses:
+   '200':
+    content:
+     application/json:
+      schema:
+       $ref: '#/components/schemas/LoginPreseed'
+   '403':
+    description: Bad login
+```
+]
+.spec-first-code[
+```scala
+trait Handler {
+  def login(
+    respond: Resource.LoginResponse.type
+  )(
+    username: String,
+    password: String
+  ): scala.concurrent.Future[Resource.LoginResponse]
+}
+```
+]
+???
+OpenAPI is a widely adopted standard, you may already have a specification solely for documentation purposes
+
+---
+# `guardrail`
+
+2\. Strong separation of concerns
+```scala
+object GuardrailApp extends App {
+  implicit val system = akka.actor.ActorSystem()
+
+  val handler = new generated.Handler {
+*   def login(respond: LoginResponse.type
+            )(username: String,
+              password: String
+*           ): Future[LoginResponse] =
+      (username, password) match {
+        case ("functional", "scala") =>
+*         Future.successful(respond.OK(...))
+        case _ =>
+*         Future.successful(respond.Forbidden)
+      }
+  }
+
+  // Generate routing layer...
+  val routes: akka.http.scaladsl.server.Route = generated.Resource.routes(handler)
+  // or, just call your function:
+  val plain: Future[LoginResponse] =
+    handler.login(LoginResponse)("functional", "scala")
+}
+```
+???
+Business logic is described entirely by a trait and case classes...
+
+---
+# `guardrail`
+
+2\. Strong separation of concerns
+```scala
+object GuardrailApp extends App {
+  implicit val system = akka.actor.ActorSystem()
+
+  val handler = new generated.Handler {
+    def login(respond: LoginResponse.type
+            )(username: String,
+              password: String
+            ): Future[LoginResponse] =
+      (username, password) match {
+        case ("functional", "scala") =>
+          Future.successful(respond.OK(...))
+        case _ =>
+          Future.successful(respond.Forbidden)
+      }
+  }
+
+  // Generate routing layer...
+* val routes: akka.http.scaladsl.server.Route = generated.Resource.routes(handler)
+  // or, just call your function:
+* val plain: Future[LoginResponse] =
+*   handler.login(LoginResponse)("functional", "scala")
+}
+```
+???
+... handler instance gets passed into a routing function to translate into your http library
+
