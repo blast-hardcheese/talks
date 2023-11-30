@@ -1,5 +1,6 @@
 run = "make slides"
 compile = "make slides"
+modules = []
 
 [nix]
 channel = "stable-22_11"
@@ -172,3 +173,7 @@ pattern = "**/{*.less,*.scss,*.css}"
       unknownVendorSpecificProperties = "ignore" # Unknown vendor specific property.
       vendorPrefix = "warning" # When using a vendor-specific prefix also include the standard property
       zeroUnits = "ignore" # No unit for zero needed"
+
+[deployment]
+deploymentTarget = "static"
+publicDir = "dist"

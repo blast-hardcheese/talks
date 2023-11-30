@@ -1,7 +1,9 @@
 default: slides
 
 slides:
-	cat index.pre.html slides.md index.post.html > index.html
+	mkdir -p dist
+	cp -rf images dist/images
+	cat index.pre.html slides.md index.post.html > dist/index.html
 
 watch:
 	@while true; do \
