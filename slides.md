@@ -21,6 +21,18 @@ GitHub:  blast-hardcheese
 ???
 A bit about me
 ---
+class: storytime
+
+# Story time
+???
+"Large" company, 50-1k developers
+Many teams
+Many services
+Lots of "legacy" code
+Documentation?
+Different libraries?
+
+---
 class: biglist
 
 ## What problems we intend to solve
