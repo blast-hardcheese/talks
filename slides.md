@@ -249,13 +249,28 @@ class: biglist
 
 3\. Extensible, high-quality code out of the box
 - Avoid common "gotchas" in libraries
+???
+akka-http `discardEntityBytes()`
+Ability to bracket every function, resource cleanup etc
+
+--
+
 - Similar idioms across libraries
+???
+Migration from akka-http to http4s is just changing which `F[_]` you write against, refactoring is easy
+Experiment with different libraries by changing your config
+
+--
+
 - Code like you would have written
+???
+case classes, simple functions, no macros
+
+--
+
 - Generated code lives in normal files
 ???
-- Ability to bracket every function, resource cleanup etc
-- Experiment with different libraries by changing your config
-- Take a look at how things are working without needing macro inspection tooling
+Take a look at how things are working without needing macro inspection tooling
 
 ---
 class: biglist
