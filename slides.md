@@ -319,3 +319,4 @@ GitHub:  blast-hardcheese
 ???
 
 If you use guardrail, I invite you to add yourself/company to the Adopters section of the README
+Gitter/Matrix channel!
