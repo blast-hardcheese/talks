@@ -177,3 +177,4 @@ pattern = "**/{*.less,*.scss,*.css}"
 [deployment]
 deploymentTarget = "static"
 publicDir = "dist"
+build = ["sh", "-c", "make slides"]

@@ -246,6 +246,8 @@ class: biglist
 - Take a look at how things are working without needing macro inspection tooling
 
 ---
+class: biglist
+
 # In conclusion,
 
 1. Specification-first
